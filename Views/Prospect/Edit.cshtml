@@ -1,0 +1,59 @@
+@model U360Prospect.Models.Prospect
+
+<h1>Edit Prospect</h1>
+
+<form asp-action="Edit" method="post">
+
+    <input type="hidden" asp-for="Id" />
+
+    <div class="mb-3">
+        <label asp-for="ProspectName" class="form-label"></label>
+        <input asp-for="ProspectName" class="form-control" />
+	<span asp-validation-for="ProspectName" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Industry" class="form-label"></label>
+        <input asp-for="Industry" class="form-control" />
+	<span asp-validation-for="Industry" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="CompanyType" class="form-label"></label>
+        <input asp-for="CompanyType" class="form-control" />
+	 <span asp-validation-for="CompanyType" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Region" class="form-label"></label>
+        <input asp-for="Region" class="form-control" />
+	 <span asp-validation-for="Region" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+    <label asp-for="Address" class="form-label"></label>
+    <input asp-for="Address" class="form-control" />
+    <span asp-validation-for="Address" class="text-danger"></span>
+</div>
+
+<div class="mb-3">
+    <label asp-for="Email" class="form-label"></label>
+    <input asp-for="Email" type="email" class="form-control" />
+    <span asp-validation-for="Email" class="text-danger"></span>
+</div>
+
+<div class="mb-3">
+    <label asp-for="PhoneNumber" class="form-label">Phone Number</label>
+    <input asp-for="PhoneNumber" type="tel" class="form-control" />
+    <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+</div>
+
+    <button type="submit" class="btn btn-primary">
+        Update Prospect
+    </button>
+
+    <a asp-action="Index" class="btn btn-secondary">
+        Cancel
+    </a>
+
+</form>
