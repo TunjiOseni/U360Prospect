@@ -1,31 +1,217 @@
 html {
-  font-size: 14px;
+    font-size: 14px;
+    position: relative;
+    min-height: 100%;
 }
 
 @media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
-}
-
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
-}
-
-html {
-  position: relative;
-  min-height: 100%;
+    html {
+        font-size: 16px;
+    }
 }
 
 body {
-  margin-bottom: 60px;
+    margin: 0;
+    margin-bottom: 60px;
+    background-color: #f8f9fa;
+    color: #212529;
 }
 
-.form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
-  color: var(--bs-secondary-color);
-  text-align: end;
+/* =========================================================
+   FORM / BUTTON FOCUS
+   ========================================================= */
+
+.btn:focus,
+.btn:active:focus,
+.btn-link.nav-link:focus,
+.form-control:focus,
+.form-check-input:focus {
+    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #d7190b;
 }
 
-.form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
-  text-align: start;
+
+/* =========================================================
+   UBA NAVIGATION BAR
+   ========================================================= */
+
+.uba-navbar {
+    background-color: #d7190b;
+    min-height: 68px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+}
+
+/* Logo */
+.uba-logo {
+    height: 42px;
+    width: auto;
+    object-fit: contain;
+    display: block;
+}
+
+/* Application name */
+.uba-app-name {
+    color: #ffffff;
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin-left: 10px;
+    white-space: nowrap;
+}
+
+/* Navigation links */
+.uba-nav-link {
+    color: #ffffff !important;
+    font-weight: 500;
+    padding: 10px 14px !important;
+    border-radius: 5px;
+    transition: background-color 0.2s ease;
+}
+
+.uba-nav-link:hover {
+    color: #ffffff !important;
+    background-color: rgba(255, 255, 255, 0.15);
+}
+
+
+/* =========================================================
+   MAIN CONTENT
+   ========================================================= */
+
+main {
+    min-height: calc(100vh - 140px);
+}
+
+
+/* =========================================================
+   CARDS
+   ========================================================= */
+
+.card {
+    border: 1px solid #e2e2e2;
+    border-radius: 8px;
+}
+
+.card-header {
+    border-bottom: 1px solid #e5e5e5;
+}
+
+
+/* =========================================================
+   PRIMARY BUTTONS
+   ========================================================= */
+
+.btn-primary {
+    background-color: #d7190b;
+    border-color: #d7190b;
+}
+
+.btn-primary:hover,
+.btn-primary:focus {
+    background-color: #b91409;
+    border-color: #b91409;
+}
+
+.btn-outline-primary {
+    color: #d7190b;
+    border-color: #d7190b;
+}
+
+.btn-outline-primary:hover,
+.btn-outline-primary:focus {
+    background-color: #d7190b;
+    border-color: #d7190b;
+    color: #ffffff;
+}
+
+
+/* =========================================================
+   SUCCESS BUTTONS
+   ========================================================= */
+
+.btn-success {
+    background-color: #198754;
+    border-color: #198754;
+}
+
+
+/* =========================================================
+   FILTER CONTROLS
+   ========================================================= */
+
+.form-control,
+.form-select {
+    border-radius: 6px;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: #d7190b;
+    box-shadow: 0 0 0 0.2rem rgba(215, 25, 11, 0.15);
+}
+
+
+/* =========================================================
+   PROSPECT TABLE
+   ========================================================= */
+
+.table-dark {
+    background-color: #d7190b !important;
+}
+
+.table-dark th {
+    background-color: #d7190b !important;
+    border-color: #b91409;
+}
+
+.table-hover tbody tr:hover {
+    background-color: #fff3f1;
+}
+
+
+/* =========================================================
+   BADGES
+   ========================================================= */
+
+.badge.bg-primary {
+    background-color: #d7190b !important;
+}
+
+
+/* =========================================================
+   PAGINATION
+   ========================================================= */
+
+.pagination .page-link {
+    color: #d7190b;
+}
+
+.pagination .page-link:hover {
+    color: #ffffff;
+    background-color: #d7190b;
+    border-color: #d7190b;
+}
+
+.pagination .page-item.active .page-link {
+    background-color: #d7190b;
+    border-color: #d7190b;
+}
+
+
+/* =========================================================
+   UBA FOOTER
+   ========================================================= */
+
+.uba-footer {
+    background-color: #d7190b;
+    color: #ffffff;
+    padding: 15px 0;
+    margin-top: 30px;
+}
+
+.uba-footer a {
+    color: #ffffff;
+    text-decoration: none;
+}
+
+.uba-footer a:hover {
+    text-decoration: underline;
 }

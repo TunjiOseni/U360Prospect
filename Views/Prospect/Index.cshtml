@@ -185,9 +185,11 @@
                             <th style="min-width: 220px;">Address</th>
                             <th class="text-nowrap">Email</th>
                             <th class="text-nowrap">Phone No.</th>
-                            <th>Region</th>
-                            <th>Load By</th>
-                            <th>Load Date</th>
+                            <th class="text-nowrap">Load By</th>
+                            <th class="text-nowrap">Load By</th>
+			    <th class="text-nowrap" style="min-width: 120px;">
+  			     Load Date
+			    </th>
                             <th class="text-center text-nowrap">Actions</th>
 
                         </tr>
@@ -234,9 +236,9 @@
                                         @prospect.LoadBy
                                     </td>
 
-                                    <td>
-                                        @(prospect.LoadDate?.ToString("dd-MMM-yyyy") ?? "-")
-                                    </td>
+				    <td class="text-nowrap" style="min-width: 120px;">
+				    @(prospect.LoadDate?.ToString("dd-MMM-yyyy") ?? "-")
+				    </td>				
 
                                     <td class="text-center text-nowrap">
 
