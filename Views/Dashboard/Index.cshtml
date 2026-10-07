@@ -1,0 +1,636 @@
+@model U360Prospect.Models.DashboardSummary
+
+@{
+    ViewData["Title"] = "Dashboard";
+
+    var countries =
+        ViewBag.Countries as IEnumerable<string>
+        ?? Enumerable.Empty<string>();
+
+    var regions =
+        ViewBag.Regions as IEnumerable<string>
+        ?? Enumerable.Empty<string>();
+
+    var branches =
+        ViewBag.Branches as IEnumerable<string>
+        ?? Enumerable.Empty<string>();
+
+    var branchPerformance =
+    ViewBag.BranchPerformance
+    as IEnumerable<U360Prospect.Models.BranchPerformance>
+    ?? Enumerable.Empty<U360Prospect.Models.BranchPerformance>();
+
+    var marketerPerformance =
+    ViewBag.MarketerPerformance
+    as IEnumerable<U360Prospect.Models.MarketerPerformance>
+    ?? Enumerable.Empty<U360Prospect.Models.MarketerPerformance>();
+}
+
+
+
+<div class="container-fluid">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="mb-1">Prospect Dashboard</h2>
+            <p class="text-muted mb-0">
+                Prospect and customer acquisition overview
+            </p>
+        </div>
+
+        <a asp-controller="Prospect"
+           asp-action="Index"
+           class="btn btn-outline-primary">
+            Manage Prospects
+        </a>
+    </div>
+
+<!-- FILTERS -->
+<div class="card shadow-sm mb-4">
+    <div class="card-body">
+
+        <form asp-action="Index"
+              method="get">
+
+            <!-- LOCATION FILTERS -->
+            <div class="row g-3">
+
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold">
+                        Country
+                    </label>
+
+                    <select name="country"
+                            class="form-select">
+
+                        <option value="">
+                            All Countries
+                        </option>
+
+                        @foreach (var item in countries)
+                        {
+                            <option value="@item"
+                                    selected="@(ViewBag.Country == item)">
+                                @item
+                            </option>
+                        }
+
+                    </select>
+                </div>
+
+
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold">
+                        Region
+                    </label>
+
+                    <select name="region"
+                            class="form-select">
+
+                        <option value="">
+                            All Regions
+                        </option>
+
+                        @foreach (var item in regions)
+                        {
+                            <option value="@item"
+                                    selected="@(ViewBag.Region == item)">
+                                @item
+                            </option>
+                        }
+
+                    </select>
+                </div>
+
+
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold">
+                        Branch
+                    </label>
+
+                    <select name="branchId"
+                            class="form-select">
+
+                        <option value="">
+                            All Branches
+                        </option>
+
+                        @foreach (var item in branches)
+                        {
+                            <option value="@item"
+                                    selected="@(ViewBag.BranchId == item)">
+                                @item
+                            </option>
+                        }
+
+                    </select>
+                </div>
+
+            </div>
+
+
+            <!-- DATE FILTERS -->
+            <div class="row g-3 mt-1">
+
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold">
+                        Start Date
+                    </label>
+
+                    <input type="date"
+                           name="startDate"
+                           value="@(ViewBag.StartDate is DateTime startDate
+                               ? startDate.ToString("yyyy-MM-dd")
+                               : "")"
+                           class="form-control" />
+                </div>
+
+
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold">
+                        End Date
+                    </label>
+
+                    <input type="date"
+                           name="endDate"
+                           value="@(ViewBag.EndDate is DateTime endDate
+                               ? endDate.ToString("yyyy-MM-dd")
+                               : "")"
+                           class="form-control" />
+                </div>
+
+            </div>
+
+
+            <!-- BUTTONS -->
+            <div class="d-flex gap-2 mt-4">
+
+                <button type="submit"
+                        class="btn btn-primary">
+                    Apply Filters
+                </button>
+
+                <a asp-action="Index"
+                   class="btn btn-outline-secondary">
+                    Clear
+                </a>
+
+            </div>
+
+        </form>
+
+    </div>
+</div>
+    <!-- KPI CARDS -->
+    <div class="row g-3 mb-4">
+
+        <div class="col-md-6 col-xl-3">
+            <div class="card shadow-sm h-100 border-primary">
+                <div class="card-body">
+                    <div class="text-muted">
+                        Total Prospects
+                    </div>
+
+                    <div class="display-6 fw-bold">
+                        @Model.TotalProspects.ToString("N0")
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-xl-3">
+            <div class="card shadow-sm h-100 border-warning">
+                <div class="card-body">
+                    <div class="text-muted">
+                        Active Prospects
+                    </div>
+
+                    <div class="display-6 fw-bold">
+                        @Model.ActiveProspects.ToString("N0")
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-xl-3">
+            <div class="card shadow-sm h-100 border-success">
+                <div class="card-body">
+                    <div class="text-muted">
+                        Converted Customers
+                    </div>
+
+                    <div class="display-6 fw-bold">
+                        @Model.ConvertedCustomers.ToString("N0")
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-xl-3">
+            <div class="card shadow-sm h-100 border-info">
+                <div class="card-body">
+                    <div class="text-muted">
+                        Conversion Rate
+                    </div>
+
+                    <div class="display-6 fw-bold">
+                        @Model.ConversionRate.ToString("N2")%
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- SECONDARY KPI -->
+    <div class="row g-3 mb-4">
+
+        <div class="col-md-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <div class="text-muted">
+                        Average Conversion Days
+                    </div>
+
+                    <div class="display-6 fw-bold">
+                        @Model.AverageConversionDays.ToString("N1")
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <div class="text-muted">
+                        New Prospects
+                    </div>
+
+                    <div class="display-6 fw-bold">
+                        @Model.NewCount.ToString("N0")
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <div class="text-muted">
+                        Lost Prospects
+                    </div>
+
+                    <div class="display-6 fw-bold">
+                        @Model.LostCount.ToString("N0")
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ACQUISITION FUNNEL -->
+    <div class="card shadow-sm mb-4">
+
+        <div class="card-header">
+            <strong>Acquisition Funnel</strong>
+        </div>
+
+        <div class="card-body">
+
+            <div class="row text-center">
+
+                <div class="col">
+                    <div class="fw-bold fs-4">
+                        @Model.NewCount
+                    </div>
+                    <div class="text-muted">New</div>
+                </div>
+
+                <div class="col">
+                    <div class="fw-bold fs-4">
+                        @Model.ContactedCount
+                    </div>
+                    <div class="text-muted">Contacted</div>
+                </div>
+
+                <div class="col">
+                    <div class="fw-bold fs-4">
+                        @Model.EngagedCount
+                    </div>
+                    <div class="text-muted">Engaged</div>
+                </div>
+
+                <div class="col">
+                    <div class="fw-bold fs-4">
+                        @Model.InterestedCount
+                    </div>
+                    <div class="text-muted">Interested</div>
+                </div>
+
+                <div class="col">
+                    <div class="fw-bold fs-4 text-success">
+                        @Model.ConvertedCount
+                    </div>
+                    <div class="text-muted">Converted</div>
+                </div>
+
+                <div class="col">
+                    <div class="fw-bold fs-4 text-danger">
+                        @Model.LostCount
+                    </div>
+                    <div class="text-muted">Lost</div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+<!-- BRANCH PERFORMANCE -->
+<div class="card shadow-sm mb-4">
+
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <strong>Branch Performance</strong>
+
+        <span class="text-muted small">
+            Prospects and customer conversions
+        </span>
+    </div>
+
+    <div class="card-body p-0">
+
+        <!-- BRANCH CHART -->
+        <div class="p-3">
+            <div style="height: 350px;">
+                <canvas id="branchConversionChart"></canvas>
+            </div>
+        </div>
+
+        <!-- BRANCH TABLE -->
+        @if (branchPerformance.Any())
+        {
+            <div class="table-responsive">
+
+                <table class="table table-hover mb-0">
+
+                    <thead class="table-light">
+                        <tr>
+                            <th>Branch</th>
+                            <th class="text-end">Prospects</th>
+                            <th class="text-end">Converted</th>
+                            <th class="text-end">Conversion Rate</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        @foreach (var branch in branchPerformance)
+                        {
+                            <tr>
+
+                                <td class="fw-semibold">
+                                    @branch.BranchId
+                                </td>
+
+                                <td class="text-end">
+                                    @branch.TotalProspects.ToString("N0")
+                                </td>
+
+                                <td class="text-end text-success fw-semibold">
+                                    @branch.ConvertedCustomers.ToString("N0")
+                                </td>
+
+                                <td class="text-end">
+                                    @branch.ConversionRate.ToString("N2")%
+                                </td>
+
+                            </tr>
+                        }
+
+                    </tbody>
+
+                </table>
+
+            </div>
+        }
+        else
+        {
+            <div class="p-4 text-center text-muted">
+                No branch performance data available
+                for the selected filters.
+            </div>
+        }
+
+    </div>
+
+</div>
+
+
+<!-- MARKETER PERFORMANCE -->
+<div class="card shadow-sm mb-4">
+
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <strong>Marketer Performance</strong>
+
+        <span class="text-muted small">
+            Prospect generation and customer conversion
+        </span>
+    </div>
+
+    <div class="card-body p-0">
+
+     <div class="p-3">
+
+    <div style="height: 350px;">
+        <canvas id="marketerPerformanceChart"></canvas>
+    </div>
+
+</div>
+
+        @if (marketerPerformance.Any())
+        {
+            <div class="table-responsive">
+
+                <table class="table table-hover mb-0">
+
+                    <thead class="table-light">
+                        <tr>
+                            <th>Marketer</th>
+                            <th class="text-end">Prospects</th>
+                            <th class="text-end">Converted</th>
+                            <th class="text-end">Conversion Rate</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        @foreach (var marketer in marketerPerformance)
+                        {
+                            <tr>
+
+                                <td class="fw-semibold">
+                                    @marketer.Marketer
+                                </td>
+
+                                <td class="text-end">
+                                    @marketer.TotalProspects.ToString("N0")
+                                </td>
+
+                                <td class="text-end text-success fw-semibold">
+                                    @marketer.ConvertedCustomers.ToString("N0")
+                                </td>
+
+                                <td class="text-end">
+                                    @marketer.ConversionRate.ToString("N2")%
+                                </td>
+
+                            </tr>
+                        }
+
+                    </tbody>
+
+                </table>
+
+            </div>
+        }
+        else
+        {
+            <div class="p-4 text-center text-muted">
+                No marketer performance data available
+                for the selected filters.
+            </div>
+        }
+
+    </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    const branchLabels = @Html.Raw(
+        System.Text.Json.JsonSerializer.Serialize(
+            branchPerformance.Select(x => x.BranchId)
+        )
+    );
+
+    const branchConversionRates = @Html.Raw(
+        System.Text.Json.JsonSerializer.Serialize(
+            branchPerformance.Select(x => x.ConversionRate)
+        )
+    );
+
+    const marketerLabels = @Html.Raw(
+        System.Text.Json.JsonSerializer.Serialize(
+            marketerPerformance.Select(x => x.Marketer)
+        )
+    );
+
+    const marketerProspects = @Html.Raw(
+        System.Text.Json.JsonSerializer.Serialize(
+            marketerPerformance.Select(x => x.TotalProspects)
+        )
+    );
+
+    const marketerConverted = @Html.Raw(
+        System.Text.Json.JsonSerializer.Serialize(
+            marketerPerformance.Select(x => x.ConvertedCustomers)
+        )
+    );
+
+
+    // =========================
+    // BRANCH PERFORMANCE CHART
+    // =========================
+
+    const branchChartCanvas =
+        document.getElementById('branchConversionChart');
+
+    if (branchChartCanvas && branchLabels.length > 0) {
+
+        new Chart(branchChartCanvas, {
+            type: 'bar',
+
+            data: {
+                labels: branchLabels,
+
+                datasets: [
+                    {
+                        label: 'Conversion Rate (%)',
+                        data: branchConversionRates
+                    }
+                ]
+            },
+
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100,
+
+                        ticks: {
+                            callback: function (value) {
+                                return value + '%';
+                            }
+                        }
+                    }
+                },
+
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                }
+            }
+        });
+    }
+
+
+    // =========================
+    // MARKETER PERFORMANCE CHART
+    // =========================
+
+    const marketerChartCanvas =
+        document.getElementById('marketerPerformanceChart');
+
+    if (marketerChartCanvas && marketerLabels.length > 0) {
+
+        new Chart(marketerChartCanvas, {
+            type: 'bar',
+
+            data: {
+                labels: marketerLabels,
+
+                datasets: [
+                    {
+                        label: 'Prospects',
+                        data: marketerProspects
+                    },
+                    {
+                        label: 'Converted',
+                        data: marketerConverted
+                    }
+                ]
+            },
+
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+
+                indexAxis: 'y',
+
+                scales: {
+                    x: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    }
+</script>

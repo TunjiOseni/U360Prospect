@@ -1,59 +1,380 @@
 @model U360Prospect.Models.Prospect
 
-<h1>Edit Prospect</h1>
+<div class="container">
 
-<form asp-action="Edit" method="post">
+    <div class="d-flex justify-content-between align-items-center mb-4">
 
-    <input type="hidden" asp-for="Id" />
+        <div>
+            <h2 class="mb-1">Edit Prospect</h2>
+            <p class="text-muted mb-0">
+                Update prospect information
+            </p>
+        </div>
 
-    <div class="mb-3">
-        <label asp-for="ProspectName" class="form-label"></label>
-        <input asp-for="ProspectName" class="form-control" />
-	<span asp-validation-for="ProspectName" class="text-danger"></span>
+        <a asp-action="Index"
+           class="btn btn-outline-secondary">
+            ← Back to Prospects
+        </a>
+
     </div>
 
-    <div class="mb-3">
-        <label asp-for="Industry" class="form-label"></label>
-        <input asp-for="Industry" class="form-control" />
-	<span asp-validation-for="Industry" class="text-danger"></span>
-    </div>
 
-    <div class="mb-3">
-        <label asp-for="CompanyType" class="form-label"></label>
-        <input asp-for="CompanyType" class="form-control" />
-	 <span asp-validation-for="CompanyType" class="text-danger"></span>
-    </div>
+    <div class="card shadow-sm">
 
-    <div class="mb-3">
-        <label asp-for="Region" class="form-label"></label>
-        <input asp-for="Region" class="form-control" />
-	 <span asp-validation-for="Region" class="text-danger"></span>
-    </div>
+        <div class="card-header bg-white">
+            <h5 class="mb-0">Prospect Information</h5>
+        </div>
 
-    <div class="mb-3">
-    <label asp-for="Address" class="form-label"></label>
-    <input asp-for="Address" class="form-control" />
-    <span asp-validation-for="Address" class="text-danger"></span>
+
+        <div class="card-body">
+
+            <form asp-action="Edit"
+                  method="post">
+
+                @Html.AntiForgeryToken()
+
+                <!-- ROWID is kept internally for Edit -->
+                <input type="hidden" asp-for="Id" />
+
+                <div asp-validation-summary="ModelOnly"
+                     class="text-danger mb-3">
+                </div>
+
+
+                <div class="row g-3">
+
+
+                    <!-- Country -->
+                    <div class="col-md-6">
+
+                        <label asp-for="Country"
+                               class="form-label">
+                            Country
+                        </label>
+
+                        <select asp-for="Country"
+                                class="form-select">
+
+                            <option value="">
+                                -- Select Country --
+                            </option>
+
+                            @if (ViewBag.Countries != null)
+                            {
+                                @foreach (var country in ViewBag.Countries)
+                                {
+                                    <option value="@country">
+                                        @country
+                                    </option>
+                                }
+                            }
+
+                        </select>
+
+                        <span asp-validation-for="Country"
+                              class="text-danger">
+                        </span>
+
+                    </div>
+
+
+                    <!-- Company Name -->
+                    <div class="col-md-6">
+
+                        <label asp-for="CompanyName"
+                               class="form-label">
+                            Company Name
+                        </label>
+
+                        <input asp-for="CompanyName"
+                               class="form-control"
+                               placeholder="Enter company name" />
+
+                        <span asp-validation-for="CompanyName"
+                              class="text-danger">
+                        </span>
+
+                    </div>
+
+
+                    <!-- Prospect Name -->
+                    <div class="col-md-6">
+
+                        <label asp-for="ProspectName"
+                               class="form-label">
+                            Prospect Name
+                        </label>
+
+                        <input asp-for="ProspectName"
+                               class="form-control"
+                               placeholder="Enter prospect name" />
+
+                        <span asp-validation-for="ProspectName"
+                              class="text-danger">
+                        </span>
+
+                    </div>
+
+
+                    <!-- Prospect Type -->
+                    <div class="col-md-6">
+
+                        <label asp-for="ProspectType"
+                               class="form-label">
+                            Prospect Type
+                        </label>
+
+                        <input asp-for="ProspectType"
+                               class="form-control"
+                               placeholder="Enter prospect type" />
+
+                        <span asp-validation-for="ProspectType"
+                              class="text-danger">
+                        </span>
+
+                    </div>
+
+		    <!-- Marketed By -->
+<div class="col-md-6">
+
+    <label asp-for="MarketedBy"
+           class="form-label">
+        Marketed By
+    </label>
+
+    <input asp-for="MarketedBy"
+           class="form-control"
+           placeholder="Enter staff name" />
+
+    <span asp-validation-for="MarketedBy"
+          class="text-danger">
+    </span>
+
+</div>
+
+<!-- Marketed Date -->
+<div class="col-md-6">
+
+    <label asp-for="MarketedDate"
+           class="form-label">
+        Marketed Date
+    </label>
+
+    <input asp-for="MarketedDate"
+           type="date"
+           class="form-control" />
+
+    <span asp-validation-for="MarketedDate"
+          class="text-danger">
+    </span>
+
 </div>
 
 <div class="mb-3">
-    <label asp-for="Email" class="form-label"></label>
-    <input asp-for="Email" type="email" class="form-control" />
-    <span asp-validation-for="Email" class="text-danger"></span>
+    <label asp-for="BranchId" class="form-label"></label>
+    <input asp-for="BranchId"
+           class="form-control"
+           placeholder="Enter branch ID" />
+    <span asp-validation-for="BranchId"
+          class="text-danger"></span>
 </div>
 
-<div class="mb-3">
-    <label asp-for="PhoneNumber" class="form-label">Phone Number</label>
-    <input asp-for="PhoneNumber" type="tel" class="form-control" />
-    <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+
+
+<!-- Acquisition Status -->
+<div class="col-md-6">
+
+    <label asp-for="AcquisitionStatus"
+           class="form-label">
+        Acquisition Status
+    </label>
+
+    <select asp-for="AcquisitionStatus"
+            class="form-select">
+
+        <option value="New">New</option>
+        <option value="Contacted">Contacted</option>
+        <option value="Engaged">Engaged</option>
+        <option value="Interested">Interested</option>
+        <option value="Not Interested">Not Interested</option>
+        <option value="Lost">Lost</option>
+        <option value="Converted">Converted</option>
+
+    </select>
+
+    <span asp-validation-for="AcquisitionStatus"
+          class="text-danger">
+    </span>
+
 </div>
 
-    <button type="submit" class="btn btn-primary">
-        Update Prospect
-    </button>
+<!-- Remarks -->
+<div class="col-12">
 
-    <a asp-action="Index" class="btn btn-secondary">
-        Cancel
-    </a>
+    <label asp-for="Remarks"
+           class="form-label">
+        Remarks
+    </label>
 
-</form>
+    <textarea asp-for="Remarks"
+              class="form-control"
+              rows="4"
+              placeholder="Enter marketing or acquisition notes"></textarea>
+
+    <span asp-validation-for="Remarks"
+          class="text-danger">
+    </span>
+
+</div>
+
+
+                    <!-- Industry -->
+                    <div class="col-md-6">
+
+                        <label asp-for="Industry"
+                               class="form-label">
+                            Industry
+                        </label>
+
+                        <input asp-for="Industry"
+                               class="form-control"
+                               placeholder="Enter industry" />
+
+                        <span asp-validation-for="Industry"
+                              class="text-danger">
+                        </span>
+
+                    </div>
+
+
+                    <!-- Region -->
+                    <div class="col-md-6">
+
+                        <label asp-for="Region"
+                               class="form-label">
+                            Region
+                        </label>
+
+                        <input asp-for="Region"
+                               class="form-control"
+                               placeholder="Enter region" />
+
+                        <span asp-validation-for="Region"
+                              class="text-danger">
+                        </span>
+
+                    </div>
+
+
+                    <!-- State -->
+                    <div class="col-md-6">
+
+                        <label asp-for="State"
+                               class="form-label">
+                            State
+                        </label>
+
+                        <input asp-for="State"
+                               class="form-control"
+                               placeholder="Enter state" />
+
+                        <span asp-validation-for="State"
+                              class="text-danger">
+                        </span>
+
+                    </div>
+
+
+                    <!-- Address -->
+                    <div class="col-12">
+
+                        <label asp-for="Address"
+                               class="form-label">
+                            Address
+                        </label>
+
+                        <textarea asp-for="Address"
+                                  class="form-control"
+                                  rows="3"
+                                  placeholder="Enter address"></textarea>
+
+                        <span asp-validation-for="Address"
+                              class="text-danger">
+                        </span>
+
+                    </div>
+
+
+                    <!-- Phone -->
+                    <div class="col-md-6">
+
+                        <label asp-for="Phone"
+                               class="form-label">
+                            Phone
+                        </label>
+
+                        <input asp-for="Phone"
+                               class="form-control"
+                               placeholder="Enter phone number" />
+
+                        <span asp-validation-for="Phone"
+                              class="text-danger">
+                        </span>
+
+                    </div>
+
+
+                    <!-- Email -->
+                    <div class="col-md-6">
+
+                        <label asp-for="Email"
+                               class="form-label">
+                            Email
+                        </label>
+
+                        <input asp-for="Email"
+                               type="email"
+                               class="form-control"
+                               placeholder="Enter email address" />
+
+                        <span asp-validation-for="Email"
+                              class="text-danger">
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <hr class="my-4" />
+
+
+                <div class="d-flex gap-2">
+
+                    <button type="submit"
+                            class="btn btn-primary">
+                        Save Changes
+                    </button>
+
+                    <a asp-action="Index"
+                       class="btn btn-outline-secondary">
+                        Cancel
+                    </a>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync(
+            "_ValidationScriptsPartial");
+    }
+}
