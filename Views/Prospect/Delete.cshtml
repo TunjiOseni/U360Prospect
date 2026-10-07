@@ -1,37 +1,163 @@
 @model U360Prospect.Models.Prospect
 
-<h1>Delete Prospect</h1>
+<div class="container">
 
-<div class="alert alert-warning">
-    <strong>Warning!</strong> Are you sure you want to delete this prospect?
-</div>
+    <div class="d-flex justify-content-between align-items-center mb-4">
 
-<div class="card">
-    <div class="card-body">
+        <div>
+            <h2 class="mb-1">Delete Prospect</h2>
+            <p class="text-muted mb-0">
+                Confirm prospect deletion
+            </p>
+        </div>
 
-        <h4>@Model.ProspectName</h4>
-
-        <p><strong>Industry:</strong> @Model.Industry</p>
-
-        <p><strong>Company Type:</strong> @Model.CompanyType</p>
-
-        <p><strong>Region:</strong> @Model.Region</p>
+        <a asp-action="Index"
+           class="btn btn-outline-secondary">
+            ← Back to Prospects
+        </a>
 
     </div>
+
+
+    <div class="card shadow-sm border-danger">
+
+        <div class="card-header bg-danger text-white">
+            <h5 class="mb-0">Confirm Delete</h5>
+        </div>
+
+
+        <div class="card-body">
+
+            <div class="alert alert-warning">
+                <strong>Warning:</strong>
+                Are you sure you want to delete this prospect?
+                This action cannot be undone.
+            </div>
+
+
+            <dl class="row">
+
+                <dt class="col-sm-3">
+                    Country
+                </dt>
+
+                <dd class="col-sm-9">
+                    @Model.Country
+                </dd>
+
+
+                <dt class="col-sm-3">
+                    Company Name
+                </dt>
+
+                <dd class="col-sm-9">
+                    @Model.CompanyName
+                </dd>
+
+
+                <dt class="col-sm-3">
+                    Prospect Name
+                </dt>
+
+                <dd class="col-sm-9">
+                    @Model.ProspectName
+                </dd>
+
+
+                <dt class="col-sm-3">
+                    Prospect Type
+                </dt>
+
+                <dd class="col-sm-9">
+                    @Model.ProspectType
+                </dd>
+
+
+                <dt class="col-sm-3">
+                    Industry
+                </dt>
+
+                <dd class="col-sm-9">
+                    @Model.Industry
+                </dd>
+
+
+                <dt class="col-sm-3">
+                    Region
+                </dt>
+
+                <dd class="col-sm-9">
+                    @Model.Region
+                </dd>
+
+
+                <dt class="col-sm-3">
+                    State
+                </dt>
+
+                <dd class="col-sm-9">
+                    @Model.State
+                </dd>
+
+
+                <dt class="col-sm-3">
+                    Address
+                </dt>
+
+                <dd class="col-sm-9">
+                    @Model.Address
+                </dd>
+
+
+                <dt class="col-sm-3">
+                    Phone
+                </dt>
+
+                <dd class="col-sm-9">
+                    @Model.Phone
+                </dd>
+
+
+                <dt class="col-sm-3">
+                    Email
+                </dt>
+
+                <dd class="col-sm-9">
+                    @Model.Email
+                </dd>
+
+            </dl>
+
+
+            <hr class="my-4" />
+
+
+            <form asp-action="DeleteConfirmed"
+                  method="post">
+
+                @Html.AntiForgeryToken()
+
+                <input type="hidden"
+                       asp-for="Id" />
+
+                <div class="d-flex gap-2">
+
+                    <button type="submit"
+                            class="btn btn-danger">
+                        Yes, Delete Prospect
+                    </button>
+
+                    <a asp-action="Index"
+                       class="btn btn-outline-secondary">
+                        Cancel
+                    </a>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
 </div>
-
-<br />
-
-<form asp-action="Delete" method="post">
-
-    <input type="hidden" asp-for="Id" />
-
-    <button type="submit" class="btn btn-danger">
-        Yes, Delete
-    </button>
-
-    <a asp-action="Index" class="btn btn-secondary">
-        Cancel
-    </a>
-
-</form>

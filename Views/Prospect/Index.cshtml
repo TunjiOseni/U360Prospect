@@ -14,27 +14,42 @@
         </div>
     }
 
+
     <!-- Page Header -->
     <div class="d-flex justify-content-between align-items-center mb-4">
 
         <div>
             <h2 class="mb-1">Prospect Management</h2>
+
             <p class="text-muted mb-0">
                 Manage and maintain prospect information
             </p>
         </div>
 
+
         <div class="d-flex gap-2">
 
-            <a asp-action="Download" class="btn btn-outline-success">
-                ↓ Download Excel
-            </a>
+           <a asp-action="Download"
+   asp-route-searchTerm="@ViewBag.SearchTerm"
+   asp-route-country="@ViewBag.Country"
+   asp-route-region="@ViewBag.Region"
+   asp-route-prospectType="@ViewBag.ProspectType"
+   asp-route-ubaCustomer="@ViewBag.UbaCustomer"
+   class="btn btn-outline-success">
+    ↓ Download Excel
+</a>
 
-            <a asp-action="Upload" class="btn btn-outline-primary">
+            <a asp-action="Upload"
+               class="btn btn-outline-primary">
                 ↑ Upload Excel
             </a>
-
-            <a asp-action="Create" class="btn btn-success">
+<a asp-controller="Dashboard"
+   asp-action="Index"
+   class="btn btn-outline-primary">
+    📊 Dashboard
+</a>
+            <a asp-action="Create"
+               class="btn btn-success">
                 + Add New Prospect
             </a>
 
@@ -44,91 +59,195 @@
 
 
     <!-- Search & Filter Section -->
-<!-- Search & Filter Section -->
-<div class="card shadow-sm mb-4">
+    <div class="card shadow-sm mb-4">
 
-    <div class="card-body">
+        <div class="card-body">
 
-        <form asp-action="Index" method="get">
+            <form asp-action="Index"
+                  method="get">
 
-            <div class="row g-2 align-items-center">
+                <div class="row g-2 align-items-center">
 
-                <div class="col-md-5">
-                    <input type="text"
-                           name="searchTerm"
-                           value="@ViewBag.SearchTerm"
-                           class="form-control"
-                           placeholder="Search prospect, industry, company type or region..." />
+
+                    <!-- Search -->
+                    <div class="col-md-4">
+
+                        <input type="text"
+                               name="searchTerm"
+                               value="@ViewBag.SearchTerm"
+                               class="form-control"
+                               placeholder="Search company, prospect, industry, type or country..." />
+
+                    </div>
+
+
+                    <!-- Country -->
+                    <div class="col-md-2">
+
+                        <select name="country"
+                                class="form-select">
+
+                            <option value="">
+                                All Countries
+                            </option>
+
+
+                            @foreach (var item in ViewBag.Countries)
+                            {
+                                if (ViewBag.Country != null &&
+                                    ViewBag.Country.ToString() == item.ToString())
+                                {
+                                    <option value="@item"
+                                            selected>
+                                        @item
+                                    </option>
+                                }
+                                else
+                                {
+                                    <option value="@item">
+                                        @item
+                                    </option>
+                                }
+                            }
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- Region -->
+                    <div class="col-md-2">
+
+                        <select name="region"
+                                class="form-select">
+
+                            <option value="">
+                                All Regions
+                            </option>
+
+
+                            @foreach (var item in ViewBag.Regions)
+                            {
+                                if (ViewBag.Region != null &&
+                                    ViewBag.Region.ToString() == item.ToString())
+                                {
+                                    <option value="@item"
+                                            selected>
+                                        @item
+                                    </option>
+                                }
+                                else
+                                {
+                                    <option value="@item">
+                                        @item
+                                    </option>
+                                }
+                            }
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- Prospect Type -->
+                    <div class="col-md-2">
+
+                        <select name="prospectType"
+                                class="form-select">
+
+                            <option value="">
+                                All Prospect Types
+                            </option>
+
+
+                            @foreach (var item in ViewBag.ProspectTypes)
+                            {
+                                if (ViewBag.ProspectType != null &&
+                                    ViewBag.ProspectType.ToString() == item.ToString())
+                                {
+                                    <option value="@item"
+                                            selected>
+                                        @item
+                                    </option>
+                                }
+                                else
+                                {
+                                    <option value="@item">
+                                        @item
+                                    </option>
+                                }
+                            }
+
+                        </select>
+
+                    </div>
+
+
+		    <!-- Prospect Status -->
+<div class="col-md-2">
+
+    <select name="ubaCustomer"
+            class="form-select">
+
+        <option value="">
+            All Prospects
+        </option>
+
+        @if (ViewBag.UbaCustomer != null &&
+             ViewBag.UbaCustomer.ToString() == "No")
+        {
+            <option value="No" selected>
+                Active Prospects
+            </option>
+        }
+        else
+        {
+            <option value="No">
+                Active Prospects
+            </option>
+        }
+
+        @if (ViewBag.UbaCustomer != null &&
+             ViewBag.UbaCustomer.ToString() == "Yes")
+        {
+            <option value="Yes" selected>
+                Converted Customers
+            </option>
+        }
+        else
+        {
+            <option value="Yes">
+                Converted Customers
+            </option>
+        }
+
+    </select>
+
+</div>
+
+                    <!-- Buttons -->
+                    <div class="col-md-2 d-flex gap-2">
+
+                        <button type="submit"
+                                class="btn btn-primary">
+                            Search
+                        </button>
+
+                        <a asp-action="Index"
+                           class="btn btn-outline-secondary">
+                            Clear
+                        </a>
+
+                    </div>
+
                 </div>
 
-                <div class="col-md-2">
+            </form>
 
-                    <select name="region" class="form-select">
-
-                        <option value="">All Regions</option>
-
-
-
-			@foreach (var item in ViewBag.Regions)
-{
-    if (ViewBag.Region != null &&
-        ViewBag.Region.ToString() == item.ToString())
-    {
-        <option value="@item" selected>@item</option>
-    }
-    else
-    {
-        <option value="@item">@item</option>
-    }
-}
-
-                    </select>
-
-                </div>
-
-                <div class="col-md-2">
-
-                    <select name="companyType" class="form-select">
-
-                        <option value="">All Company Types</option>
-
-			@foreach (var item in ViewBag.CompanyTypes)
-{
-    if (ViewBag.CompanyType != null &&
-        ViewBag.CompanyType.ToString() == item.ToString())
-    {
-        <option value="@item" selected>@item</option>
-    }
-    else
-    {
-        <option value="@item">@item</option>
-    }
-}
-
-                    </select>
-
-                </div>
-
-                <div class="col-md-3 d-flex gap-2">
-
-                    <button type="submit" class="btn btn-primary">
-                        Search
-                    </button>
-
-                    <a asp-action="Index"
-                       class="btn btn-outline-secondary">
-                        Clear
-                    </a>
-
-                </div>
-
-            </div>
-
-        </form>
+        </div>
 
     </div>
 
-</div>
 
     <!-- Prospect Grid -->
     <div class="card shadow-sm">
@@ -140,140 +259,372 @@
             </h5>
 
             <span class="badge bg-primary">
-                @Model.TotalCount Record@(Model.TotalCount == 1 ? "" : "s")
+                @Model.TotalCount
+                Record@(Model.TotalCount == 1 ? "" : "s")
             </span>
 
         </div>
+
 
         <div class="card-body p-0">
 
             <div class="table-responsive">
 
-                <table class="table table-hover table-striped mb-0">
+            <table class="table table-hover table-striped mb-0">
 
-                    <thead class="table-dark">
+    <thead class="table-dark">
 
-                        <tr>
+        <tr>
 
-                            <th>ID</th>
+            <!-- Country -->
+            <th>
+                <a asp-action="Index"
+                   asp-route-searchTerm="@ViewBag.SearchTerm"
+                   asp-route-country="@ViewBag.Country"
+                   asp-route-region="@ViewBag.Region"
+                   asp-route-prospectType="@ViewBag.ProspectType"
+                   asp-route-ubaCustomer="@ViewBag.UbaCustomer"
+                   asp-route-pageNumber="1"
+                   asp-route-sortColumn="Country"
+                   asp-route-sortDirection="@(ViewBag.SortColumn == "Country" && ViewBag.SortDirection == "asc" ? "desc" : "asc")"
+                   class="text-decoration-none text-white">
 
-                            <th>
-                                <a asp-action="Index"
-                                   asp-route-searchTerm="@ViewBag.SearchTerm"
-                                   asp-route-region="@ViewBag.Region"
-                                   asp-route-pageNumber="1"
-                                   asp-route-sortColumn="ProspectName"
-                                   asp-route-sortDirection="@(ViewBag.SortColumn == "ProspectName" && ViewBag.SortDirection == "asc" ? "desc" : "asc")"
-                                   class="text-decoration-none text-white">
+                    Country
 
-                                    Prospect Name
+                    @if (ViewBag.SortColumn == "Country")
+                    {
+                        @(ViewBag.SortDirection == "asc" ? "▲" : "▼")
+                    }
+                    else
+                    {
+                        <span>↕</span>
+                    }
 
-                                    @if (ViewBag.SortColumn == "ProspectName")
-                                    {
-                                        @(ViewBag.SortDirection == "asc" ? "▲" : "▼")
-                                    }
-                                    else
-                                    {
-                                        <span>↕</span>
-                                    }
+                </a>
+            </th>
 
-                                </a>
-                            </th>
 
-                            <th>Industry</th>
-                            <th>Company Type</th>
-                            <th style="min-width: 220px;">Address</th>
-                            <th class="text-nowrap">Email</th>
-                            <th class="text-nowrap">Phone No.</th>
-                            <th class="text-nowrap">Load By</th>
-                            <th class="text-nowrap">Load By</th>
-			    <th class="text-nowrap" style="min-width: 120px;">
-  			     Load Date
-			    </th>
-                            <th class="text-center text-nowrap">Actions</th>
+            <!-- Prospect Name -->
+            <th>
+                <a asp-action="Index"
+                   asp-route-searchTerm="@ViewBag.SearchTerm"
+                   asp-route-country="@ViewBag.Country"
+                   asp-route-region="@ViewBag.Region"
+                   asp-route-prospectType="@ViewBag.ProspectType"
+                   asp-route-ubaCustomer="@ViewBag.UbaCustomer"
+                   asp-route-pageNumber="1"
+                   asp-route-sortColumn="ProspectName"
+                   asp-route-sortDirection="@(ViewBag.SortColumn == "ProspectName" && ViewBag.SortDirection == "asc" ? "desc" : "asc")"
+                   class="text-decoration-none text-white">
 
-                        </tr>
+                    Prospect Name
 
-                    </thead>
+                    @if (ViewBag.SortColumn == "ProspectName")
+                    {
+                        @(ViewBag.SortDirection == "asc" ? "▲" : "▼")
+                    }
+                    else
+                    {
+                        <span>↕</span>
+                    }
 
-                    <tbody>
+                </a>
+            </th>
 
-                        @if (Model != null && Model.Items.Any())
+
+            <th>Prospect Type</th>
+
+
+            <!-- Customer Status -->
+            <th class="text-center text-nowrap">
+                Customer Status
+            </th>
+
+
+            <!-- Acquisition Status -->
+            <th class="text-nowrap">
+                Acquisition Status
+            </th>
+
+
+            <!-- Marketed By -->
+            <th class="text-nowrap">
+                Marketed By
+            </th>
+
+
+            <!-- Marketed Date -->
+            <th class="text-nowrap">
+                Marketed Date
+            </th>
+
+	    <th style="min-width: 130px;">Branch ID</th>
+            <th style="min-width: 140px;">Uploaded Date</th>
+            <th style="min-width: 140px;">Converted Date</th>
+            <th style="min-width: 130px;">Conversion Days</th>
+
+
+            <th>Industry</th>
+
+
+            <th style="min-width: 220px;">
+                Address
+            </th>
+
+
+            <th>State</th>
+
+
+            <th>Region</th>
+
+
+            <th class="text-nowrap">
+                Phone
+            </th>
+
+
+            <th class="text-nowrap">
+                Email
+	    </th>
+
+
+
+           <th class="text-center text-nowrap actions-column">
+               Actions
+
+</th>
+
+        </tr>
+
+    </thead>
+
+
+    <tbody>
+
+        @if (Model != null && Model.Items.Any())
+        {
+            @foreach (var prospect in Model.Items)
+            {
+                <tr>
+
+                    <td class="text-nowrap">
+                        @prospect.Country
+                    </td>
+
+
+                    <td class="fw-semibold">
+                        @prospect.ProspectName
+                    </td>
+
+
+                    <td class="text-nowrap">
+                        @prospect.ProspectType
+                    </td>
+
+
+                    <!-- Customer Status -->
+                    <td class="text-center text-nowrap">
+
+                        @if (prospect.UbaCustomer == "Yes")
                         {
-                            @foreach (var prospect in Model.Items)
-                            {
-                                <tr>
-
-                                    <td>@prospect.Id</td>
-
-                                    <td class="fw-semibold">
-                                        @prospect.ProspectName
-                                    </td>
-
-                                    <td>@prospect.Industry</td>
-
-                                    <td class="text-nowrap">
-                                        @prospect.CompanyType
-                                    </td>
-
-                                    <td style="min-width: 220px; max-width: 300px;">
-                                        @prospect.Address
-                                    </td>
-
-                                    <td class="text-nowrap">
-                                        @prospect.Email
-                                    </td>
-
-                                    <td class="text-nowrap">
-                                        @prospect.PhoneNumber
-                                    </td>
-
-                                    <td class="text-nowrap">
-                                        @prospect.Region
-                                    </td>
-
-                                    <td class="text-nowrap">
-                                        @prospect.LoadBy
-                                    </td>
-
-				    <td class="text-nowrap" style="min-width: 120px;">
-				    @(prospect.LoadDate?.ToString("dd-MMM-yyyy") ?? "-")
-				    </td>				
-
-                                    <td class="text-center text-nowrap">
-
-                                        <a asp-action="Edit"
-                                           asp-route-id="@prospect.Id"
-                                           class="btn btn-sm btn-outline-primary">
-                                            Edit
-                                        </a>
-
-                                        <a asp-action="Delete"
-                                           asp-route-id="@prospect.Id"
-                                           class="btn btn-sm btn-outline-danger">
-                                            Delete
-                                        </a>
-
-                                    </td>
-
-                                </tr>
-                            }
+                            <span class="badge bg-success">
+                                Converted Customer
+                            </span>
                         }
                         else
                         {
-                            <tr>
-
-                                <td colspan="11"
-                                    class="text-center text-muted py-4">
-                                    No prospects found.
-                                </td>
-
-                            </tr>
+                            <span class="badge bg-warning text-dark">
+                                Active Prospect
+                            </span>
                         }
 
-                    </tbody>
+                    </td>
 
-                </table>
+
+                    <!-- Acquisition Status -->
+                    <td class="text-nowrap">
+
+                        @switch (prospect.AcquisitionStatus)
+                        {
+                            case "New":
+                                <span class="badge bg-secondary">
+                                    New
+                                </span>
+                                break;
+
+                            case "Contacted":
+                                <span class="badge bg-primary">
+                                    Contacted
+                                </span>
+                                break;
+
+                            case "Engaged":
+                                <span class="badge bg-info text-dark">
+                                    Engaged
+                                </span>
+                                break;
+
+                            case "Interested":
+                                <span class="badge bg-success">
+                                    Interested
+                                </span>
+                                break;
+
+                            case "Not Interested":
+                                <span class="badge bg-warning text-dark">
+                                    Not Interested
+                                </span>
+                                break;
+
+                            case "Lost":
+                                <span class="badge bg-danger">
+                                    Lost
+                                </span>
+                                break;
+
+                            case "Converted":
+                                <span class="badge bg-success">
+                                    Converted
+                                </span>
+                                break;
+
+                            default:
+                                <span class="badge bg-secondary">
+                                    @prospect.AcquisitionStatus
+                                </span>
+                                break;
+                        }
+
+                    </td>
+
+
+                    <!-- Marketed By -->
+                    <td>
+                        @prospect.MarketedBy
+                    </td>
+
+
+                    <!-- Marketed Date -->
+                    <td class="text-nowrap">
+                        @(prospect.MarketedDate?.ToString("dd-MMM-yyyy"))
+                    </td>
+
+		    <td class="text-nowrap">
+    @prospect.BranchId
+</td>
+
+<td class="text-nowrap">
+    @prospect.UploadedDate?.ToString("dd-MMM-yyyy")
+</td>
+
+<td class="text-nowrap">
+    @prospect.ConvertedDate?.ToString("dd-MMM-yyyy")
+</td>
+
+<td class="text-center text-nowrap">
+    @if (prospect.UploadedDate.HasValue &&
+         prospect.ConvertedDate.HasValue)
+    {
+        @((prospect.ConvertedDate.Value.Date -
+           prospect.UploadedDate.Value.Date).Days)
+    }
+    else
+    {
+        <span class="text-muted">—</span>
+    }
+</td>
+
+
+                    <td>
+                        @prospect.Industry
+                    </td>
+
+
+                    <td style="min-width: 220px; max-width: 300px;">
+                        @prospect.Address
+                    </td>
+
+
+                    <td class="text-nowrap">
+                        @prospect.State
+                    </td>
+
+
+                    <td class="text-nowrap">
+                        @prospect.Region
+                    </td>
+
+
+                    <td class="text-nowrap">
+                        @prospect.Phone
+                    </td>
+
+
+                    <td class="text-nowrap">
+                        @prospect.Email
+                    </td>
+
+
+                    <!-- Actions -->
+                   <td class="text-center text-nowrap actions-column">
+
+                        @if (prospect.UbaCustomer != "Yes")
+                        {
+                            <form asp-action="ConvertToCustomer"
+                                  method="post"
+                                  class="d-inline"
+                                  onsubmit="return confirm('Are you sure this prospect has become a UBA customer?');">
+
+                                @Html.AntiForgeryToken()
+
+                                <input type="hidden"
+                                       name="id"
+                                       value="@prospect.Id" />
+
+                                <button type="submit"
+                                        class="btn btn-sm btn-outline-success">
+                                    Convert
+                                </button>
+
+                            </form>
+                        }
+
+
+                        <a asp-action="Edit"
+                           asp-route-id="@prospect.Id"
+                           class="btn btn-sm btn-outline-primary">
+                            Edit
+                        </a>
+
+
+                        <a asp-action="Delete"
+                           asp-route-id="@prospect.Id"
+                           class="btn btn-sm btn-outline-danger">
+                            Delete
+                        </a>
+
+                    </td>
+
+                </tr>
+            }
+        }
+        else
+        {
+            <tr>
+
+                <td colspan="14"
+                    class="text-center py-4 text-muted">
+
+                    No prospects found.
+
+                </td>
+
+            </tr>
+        }
+
+    </tbody>
+
+</table>
 
             </div>
 
@@ -284,27 +635,33 @@
 </div>
 
 
+<!-- Record Count -->
 @if (Model != null && Model.TotalCount > 0)
 {
-    var startRecord = ((Model.PageNumber - 1) * Model.PageSize) + 1;
+    var startRecord =
+        ((Model.PageNumber - 1) * Model.PageSize) + 1;
 
-    var endRecord = Math.Min(
-        Model.PageNumber * Model.PageSize,
-        Model.TotalCount
-    );
+    var endRecord =
+        Math.Min(
+            Model.PageNumber * Model.PageSize,
+            Model.TotalCount);
 
     <div class="text-muted text-center mt-3">
-        Showing @startRecord–@endRecord of @Model.TotalCount records
+
+        Showing @startRecord–@endRecord
+        of @Model.TotalCount records
+
     </div>
 }
 
 
-            @if (Model != null && Model.TotalPages > 1)
+<!-- Pagination -->
+@if (Model != null && Model.TotalPages > 1)
+{
+    <nav class="mt-4">
 
-	    {
-	    <nav class="mt-4">
+        <ul class="pagination justify-content-center">
 
-       	     <ul class="pagination justify-content-center">
 
             <!-- Previous -->
             <li class="page-item @(Model.PageNumber == 1 ? "disabled" : "")">
@@ -312,13 +669,19 @@
                 <a class="page-link"
                    asp-action="Index"
                    asp-route-searchTerm="@ViewBag.SearchTerm"
+                   asp-route-country="@ViewBag.Country"
                    asp-route-region="@ViewBag.Region"
-                   asp-route-companyType="@ViewBag.CompanyType"
-                   asp-route-pageNumber="@(Model.PageNumber - 1)">
+                   asp-route-prospectType="@ViewBag.ProspectType"
+                   asp-route-pageNumber="@(Model.PageNumber - 1)"
+                   asp-route-sortColumn="@ViewBag.SortColumn"
+                   asp-route-sortDirection="@ViewBag.SortDirection">
+
                     Previous
+
                 </a>
 
             </li>
+
 
             <!-- Page Numbers -->
             @for (int i = 1; i <= Model.TotalPages; i++)
@@ -328,14 +691,20 @@
                     <a class="page-link"
                        asp-action="Index"
                        asp-route-searchTerm="@ViewBag.SearchTerm"
+                       asp-route-country="@ViewBag.Country"
                        asp-route-region="@ViewBag.Region"
-                       asp-route-companyType="@ViewBag.CompanyType"
-                       asp-route-pageNumber="@i">
+                       asp-route-prospectType="@ViewBag.ProspectType"
+                       asp-route-pageNumber="@i"
+                       asp-route-sortColumn="@ViewBag.SortColumn"
+                       asp-route-sortDirection="@ViewBag.SortDirection">
+
                         @i
+
                     </a>
 
                 </li>
             }
+
 
             <!-- Next -->
             <li class="page-item @(Model.PageNumber == Model.TotalPages ? "disabled" : "")">
@@ -343,10 +712,15 @@
                 <a class="page-link"
                    asp-action="Index"
                    asp-route-searchTerm="@ViewBag.SearchTerm"
+                   asp-route-country="@ViewBag.Country"
                    asp-route-region="@ViewBag.Region"
-                   asp-route-companyType="@ViewBag.CompanyType"
-                   asp-route-pageNumber="@(Model.PageNumber + 1)">
+                   asp-route-prospectType="@ViewBag.ProspectType"
+                   asp-route-pageNumber="@(Model.PageNumber + 1)"
+                   asp-route-sortColumn="@ViewBag.SortColumn"
+                   asp-route-sortDirection="@ViewBag.SortDirection">
+
                     Next
+
                 </a>
 
             </li>
@@ -355,3 +729,32 @@
 
     </nav>
 }
+
+<style>
+    .table-responsive {
+        overflow-x: auto;
+    }
+
+    .actions-column {
+        position: sticky;
+        right: 0;
+        z-index: 2;
+        background-color: white;
+        min-width: 220px;
+        box-shadow: -4px 0 6px rgba(0, 0, 0, 0.08);
+    }
+
+    thead .actions-column {
+        background-color: #dc1a0c;
+        color: white;
+        z-index: 3;
+    }
+
+    tbody tr:nth-child(even) .actions-column {
+        background-color: #f2f2f2;
+    }
+
+    tbody tr:nth-child(odd) .actions-column {
+        background-color: white;
+    }
+</style>
