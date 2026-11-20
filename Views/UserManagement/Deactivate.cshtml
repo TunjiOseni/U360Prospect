@@ -1,0 +1,67 @@
+
+@model U360Prospect.Models.Api.DeactivateUserRequest
+
+@{
+    ViewData["Title"] = "Deactivate User";
+}
+
+<div class="container mt-4">
+
+    <h3>Deactivate User Account</h3>
+    <p class="text-muted">Confirm the account deactivation.</p>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+
+            <div class="alert alert-warning">
+                <strong>Warning:</strong>
+                This action will prevent the user from accessing U360Prospect.
+            </div>
+
+            <p><strong>Username:</strong> @ViewBag.Username</p>
+            <p><strong>Display Name:</strong> @ViewBag.DisplayName</p>
+
+            <form asp-action="Deactivate"
+                  asp-route-id="@ViewBag.UserId"
+                  method="post">
+
+                @Html.AntiForgeryToken()
+
+                <div asp-validation-summary="ModelOnly"
+                     class="text-danger mb-3"></div>
+
+                <div class="mb-3">
+                    <label asp-for="Reason" class="form-label">
+                        Reason for Deactivation
+                        <span class="text-danger">*</span>
+                    </label>
+
+                    <textarea asp-for="Reason"
+                              class="form-control"
+                              rows="4"
+                              placeholder="Enter the reason for deactivating this account"></textarea>
+
+                    <span asp-validation-for="Reason"
+                          class="text-danger"></span>
+                </div>
+
+                <button type="submit" class="btn btn-danger">
+                    Confirm Deactivation
+                </button>
+
+                <a asp-controller="UserManagement"
+                   asp-action="Details"
+                   asp-route-id="@ViewBag.UserId"
+                   class="btn btn-light">
+                    Cancel
+                </a>
+
+            </form>
+
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

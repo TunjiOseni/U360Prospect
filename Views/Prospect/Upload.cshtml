@@ -16,9 +16,31 @@
 
                 <div class="card-body">
 
-                    <p class="text-muted">
-                        Upload an Excel file containing prospect information.
-                    </p>
+                    <div class="mb-3">
+    <label for="defaultCountry" class="form-label">
+        Default Country for Blank Country Cells
+    </label>
+
+    <select id="defaultCountry"
+            name="defaultCountry"
+            class="form-select"
+            required>
+        <option value="">-- Select Country --</option>
+
+        @foreach (var item in ViewBag.Countries)
+        {
+            <option value="@item.Code"
+                    selected="@(item.Code == "NG")">
+                @item.DisplayName
+            </option>
+        }
+    </select>
+
+    <div class="form-text">
+        Used only when the Excel COUNTRY cell is blank.
+        Existing country values will be validated separately.
+    </div>
+</div>
 
                     <form asp-action="Upload"
                           method="post"
@@ -26,7 +48,29 @@
 
 			    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
-                        <div class="mb-3">
+<div class="mb-3">
+    <label for="defaultCountry" class="form-label">
+        Default Country for Blank Country Cells
+    </label>
+
+    <select id="defaultCountry"
+            name="defaultCountry"
+            class="form-select"
+            required>
+        <option value="">-- Select Country --</option>
+
+        @foreach (var item in ViewBag.Countries)
+        {
+            <option value="@item.Code">
+                @item.DisplayName
+            </option>
+        }
+    </select>
+
+    <div class="form-text">
+        Used when the Excel COUNTRY cell is blank.
+    </div>
+</div>                        <div class="mb-3">
 
                             <label class="form-label">
                                 Select Excel File

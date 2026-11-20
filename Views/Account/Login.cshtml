@@ -1,0 +1,119 @@
+@model U360Prospect.ViewModels.LoginViewModel
+
+@{
+    ViewData["Title"] = "Sign In";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Sign In - U360Prospect</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+
+    <style>
+        body {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f4f6f9;
+            font-family: Arial, sans-serif;
+        }
+
+        .login-card {
+            width: 100%;
+            max-width: 430px;
+            background: white;
+            padding: 32px;
+            border-radius: 12px;
+            box-shadow: 0 8px 28px rgba(0, 0, 0, 0.10);
+        }
+
+        .brand {
+            color: #c8102e;
+            font-weight: 700;
+            font-size: 26px;
+            text-align: center;
+        }
+
+        .subtitle {
+            color: #666;
+            text-align: center;
+            margin-bottom: 28px;
+        }
+
+        .btn-uba {
+            background: #c8102e;
+            color: white;
+            width: 100%;
+        }
+
+        .btn-uba:hover {
+            background: #a50d25;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <main class="login-card">
+        <div class="brand">U360Prospect</div>
+
+        <div class="subtitle">
+            Prospect &amp; Customer Acquisition Management
+        </div>
+
+        <h5 class="mb-3">Sign in with your UBA login details </h5>
+
+        <div asp-validation-summary="ModelOnly"
+             class="text-danger mb-3"></div>
+
+        <form asp-controller="Account" asp-action="Login" method="post">
+            @Html.AntiForgeryToken()
+
+            <div class="mb-3">
+                <label asp-for="Username" class="form-label"></label>
+                <input asp-for="Username"
+                       class="form-control"
+                       autocomplete="username"
+                       placeholder="Enter your username" />
+                <span asp-validation-for="Username"
+                      class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Password" class="form-label"></label>
+                <input asp-for="Password"
+                       class="form-control"
+                       autocomplete="current-password"
+                       placeholder="Enter your  password" />
+                <span asp-validation-for="Password"
+                      class="text-danger"></span>
+            </div>
+
+
+
+
+            <button type="submit" class="btn btn-uba mt-2">
+                Sign In
+            </button>
+        </form>
+
+        <div class="text-center my-3">
+            <span class="text-muted">OR</span>
+        </div>
+
+        <a asp-controller="Account"
+           asp-action="OktaLogin"
+           class="btn btn-outline-dark w-100">
+            Sign in with Okta
+        </a>
+
+        <p class="text-muted small text-center mt-4 mb-0">
+            Corporate credentials are verified by Active Directory.
+        </p>
+    </main>
+</body>
+</html>

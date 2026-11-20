@@ -1,0 +1,84 @@
+
+@model U360Prospect.Models.Api.UpdateUserRequest
+
+@{
+    ViewData["Title"] = "Edit User";
+}
+
+<div class="container mt-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h3>Edit User</h3>
+            <p class="text-muted mb-0">
+                Update application user information.
+            </p>
+        </div>
+
+        <a asp-controller="UserManagement"
+           asp-action="Details"
+           asp-route-id="@ViewBag.UserId"
+           class="btn btn-outline-secondary">
+            Back to Details
+        </a>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+
+            <form asp-action="Edit"
+                  asp-route-id="@ViewBag.UserId"
+                  method="post">
+
+                @Html.AntiForgeryToken()
+
+                <div asp-validation-summary="ModelOnly"
+                     class="text-danger mb-3"></div>
+
+                <div class="mb-3">
+                    <label class="form-label">Windows Username</label>
+
+                    <input class="form-control"
+                           value="@ViewBag.Username"
+                           readonly />
+
+                    <small class="text-muted">
+                        The Windows username cannot be changed here.
+                    </small>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="DisplayName" class="form-label">
+                        Display Name <span class="text-danger">*</span>
+                    </label>
+
+                    <input asp-for="DisplayName"
+                           class="form-control" />
+
+                    <span asp-validation-for="DisplayName"
+                          class="text-danger"></span>
+                </div>
+
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-primary">
+                        Save Changes
+                    </button>
+
+                    <a asp-controller="UserManagement"
+                       asp-action="Details"
+                       asp-route-id="@ViewBag.UserId"
+                       class="btn btn-light">
+                        Cancel
+                    </a>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

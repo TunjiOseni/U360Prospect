@@ -1,0 +1,55 @@
+@model U360Prospect.Models.Api.RoleDetailsResponse
+
+@{
+    ViewData["Title"] = "Role Details";
+}
+
+<div class="container mt-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h3>Role Details</h3>
+            <p class="text-muted mb-0">
+                View application role information.
+            </p>
+        </div>
+
+        <a asp-action="Index" class="btn btn-outline-secondary">
+            Back to Roles
+        </a>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-header">
+            <strong>Role Information</strong>
+        </div>
+
+        <div class="card-body">
+            <dl class="row">
+
+                <dt class="col-sm-3">Role ID</dt>
+                <dd class="col-sm-9">@Model.RoleId</dd>
+
+                <dt class="col-sm-3">Role Name</dt>
+                <dd class="col-sm-9">@Model.RoleName</dd>
+
+                <dt class="col-sm-3">Description</dt>
+                <dd class="col-sm-9">
+                    @(string.IsNullOrWhiteSpace(Model.Description)
+                        ? "No description"
+                        : Model.Description)
+                </dd>
+
+                <dt class="col-sm-3">Assigned Users</dt>
+                <dd class="col-sm-9">@Model.AssignedUsersCount</dd>
+
+                <dt class="col-sm-3">Date Created</dt>
+                <dd class="col-sm-9">
+                    @Model.CreatedAt.ToString("dd-MMM-yyyy HH:mm")
+                </dd>
+
+            </dl>
+        </div>
+    </div>
+
+</div>

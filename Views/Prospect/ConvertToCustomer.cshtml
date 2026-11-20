@@ -1,0 +1,137 @@
+```cshtml
+@model U360Prospect.ViewModels.ProspectConversionViewModel
+
+@{
+    ViewData["Title"] = "Verify Prospect Conversion";
+}
+
+<div class="container mt-4 mb-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2>Verify Prospect Conversion</h2>
+            <p class="text-muted mb-0">
+                Verify the newly opened account before converting this prospect.
+            </p>
+        </div>
+
+        <a asp-action="Index" class="btn btn-outline-secondary">
+            Cancel
+        </a>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body p-4">
+
+            <div asp-validation-summary="ModelOnly"
+                 class="alert alert-danger"
+                 role="alert"></div>
+
+            <h5 class="mb-3">Prospect Details</h5>
+
+            <div class="row mb-4">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Prospect Name</label>
+                    <input class="form-control"
+                           value="@Model.ProspectName"
+                           readonly />
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Prospect Country</label>
+                    <input class="form-control"
+                           value="@Model.ProspectCountry"
+                           readonly />
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Original Upload Date</label>
+                    <input class="form-control"
+                           value="@(Model.UploadedDate?.ToString("dd-MMM-yyyy") ?? "Unavailable")"
+                           readonly />
+                </div>
+            </div>
+
+            <hr />
+
+            <h5 class="mb-3">New Account Details</h5>
+
+            <form asp-controller="Prospect"
+                  asp-action="ConvertToCustomer"
+                  method="post">
+
+                @Html.AntiForgeryToken()
+
+                <input type="hidden" asp-for="ProspectId" />
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="AccountNumber" class="form-label">
+                            Account Number <span class="text-danger">*</span>
+                        </label>
+                        <input asp-for="AccountNumber"
+                               class="form-control"
+                               maxlength="50"
+                               autocomplete="off" />
+                        <span asp-validation-for="AccountNumber"
+                              class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="SolId" class="form-label">
+                            SOL ID <span class="text-danger">*</span>
+                        </label>
+                        <input asp-for="SolId"
+                               class="form-control"
+                               maxlength="4"
+                               inputmode="numeric"
+                               placeholder="e.g. 0001"
+                               autocomplete="off" />
+                        <span asp-validation-for="SolId"
+                              class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="Country" class="form-label">
+                            Country <span class="text-danger">*</span>
+                        </label>
+                        <input asp-for="Country"
+                               class="form-control"
+                               maxlength="100"
+                               autocomplete="off" />
+                        <span asp-validation-for="Country"
+                              class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="AccountOpenDate" class="form-label">
+                            Account Open Date <span class="text-danger">*</span>
+                        </label>
+                        <input asp-for="AccountOpenDate"
+                               type="date"
+                               class="form-control" />
+                        <span asp-validation-for="AccountOpenDate"
+                              class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="alert alert-info mt-2">
+                    The account details will be checked against the banking
+                    database. The account-opening date must be later than
+                    the original prospect upload date.
+                </div>
+
+                <div class="d-flex gap-2 mt-4">
+                    <button type="submit" class="btn btn-success">
+                        Verify and Convert
+                    </button>
+
+                    <a asp-action="Index"
+                       class="btn btn-outline-secondary">
+                        Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+```

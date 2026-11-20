@@ -38,11 +38,13 @@ public class Prospect
     [Display(Name = "Acquisition Status")]
     public string AcquisitionStatus { get; set; } = "New";
 
+
     [Display(Name = "Remarks")]
     public string? Remarks { get; set; }
 
     [Required(ErrorMessage = "Industry is required")]
     public string Industry { get; set; } = string.Empty;
+    public string? Funded { get; set; }
 
     [Display(Name = "Uploaded Date")]
     [DataType(DataType.Date)]

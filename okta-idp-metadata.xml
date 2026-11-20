@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?><md:EntityDescriptor entityID="http://www.okta.com/exk28d3kx9nzJgHcL1d8" xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata"><md:IDPSSODescriptor WantAuthnRequestsSigned="false" protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol"><md:KeyDescriptor use="signing"><ds:KeyInfo xmlns:ds="http://www.w3.org/2000/09/xmldsig#"><ds:X509Data><ds:X509Certificate>MIIDsDCCApigAwIBAgIGAaGITJbtMA0GCSqGSIb3DQEBCwUAMIGYMQswCQYDVQQGEwJVUzETMBEG
+A1UECAwKQ2FsaWZvcm5pYTEWMBQGA1UEBwwNU2FuIEZyYW5jaXNjbzENMAsGA1UECgwET2t0YTEU
+MBIGA1UECwwLU1NPUHJvdmlkZXIxGTAXBgNVBAMMEHN0YWdpbmctdWJhZ3JvdXAxHDAaBgkqhkiG
+9w0BCQEWDWluZm9Ab2t0YS5jb20wHhcNMjYxMDI5MTUzMzQzWhcNMzYxMDI5MTUzNDQzWjCBmDEL
+MAkGA1UEBhMCVVMxEzARBgNVBAgMCkNhbGlmb3JuaWExFjAUBgNVBAcMDVNhbiBGcmFuY2lzY28x
+DTALBgNVBAoMBE9rdGExFDASBgNVBAsMC1NTT1Byb3ZpZGVyMRkwFwYDVQQDDBBzdGFnaW5nLXVi
+YWdyb3VwMRwwGgYJKoZIhvcNAQkBFg1pbmZvQG9rdGEuY29tMIIBIjANBgkqhkiG9w0BAQEFAAOC
+AQ8AMIIBCgKCAQEAtYQshnF3jtec3Nf8hfXEhalbd7lC72yVmrwRF44ZutWNWTPQTUK7dlUkha+/
+wxXy8d48cS6IEUwqGZNWzmWvewmXBRgE8dAdqTLIfZaEfQb+k2Fg0U5nL7GrZtgnMczr3B9y1h4u
+LQISb6XRc11UvSYj/XXH/dTlvYKGxYFIcWOc7jNf7pwwPJ2DrTB+T+jYcZXqRQKLStP279pBkY75
+OrtcEKsH+0xIYw4MY5Ht6RBtCeJrr/ZJDxfC9MD8L6XQ9WCah0itWttrCpmTji329UoNwMp0OnY4
+imVgvh5qne671zWmUID2ACIZlcTa/gMVCXsliWg4q1xKWU1UMVXHeQIDAQABMA0GCSqGSIb3DQEB
+CwUAA4IBAQCp+jV9E7ytfKdXFBVj11YAUqHkYXoinCv9QQx9SeIw2La/4amx1/TpHsH+5C7EQG1E
+4+rWj71ihk6U9SxVLQdBHu89hRWpJUamEiycUhWw0Z9EWwlsTCPDUWzF97Q3yvxXb09pUW1Vh1uH
+k1hA8D+xoEjm2pvOZrsUfVA+oit4t4hkwP5P6pbwXV6NEhnQEsvoyUS+485HJ/m/z9JTSd4gvD7Q
+GBtUDAMwbBThiSzW7FeFkGUwqU0eecdQmqWEj2Gm9wu6z1SHUvQXjpzUtwUscKzEGlhZR1KcO1F1
+2doTOrfbWBQ4s7UyQi3Sso+FzK56+UMLa2ljkLjl83AYncVY</ds:X509Certificate></ds:X509Data></ds:KeyInfo></md:KeyDescriptor><md:NameIDFormat>urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified</md:NameIDFormat><md:NameIDFormat>urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress</md:NameIDFormat><md:SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="https://staging-ubagroup.okta.com/app/staging-ubagroup_u360prospect_1/exk28d3kx9nzJgHcL1d8/sso/saml"/><md:SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="https://staging-ubagroup.okta.com/app/staging-ubagroup_u360prospect_1/exk28d3kx9nzJgHcL1d8/sso/saml"/></md:IDPSSODescriptor></md:EntityDescriptor>

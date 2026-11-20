@@ -215,3 +215,35 @@ main {
 .uba-footer a:hover {
     text-decoration: underline;
 }
+
+/* U360Prospect application branding */
+.uba-brand-text {
+    display: flex;
+    flex-direction: column;
+    margin-left: 12px;
+    line-height: 1.25;
+}
+
+.uba-app-name {
+    color: #FFFFFF;
+    font-size: 1.35rem;
+    font-weight: 700;
+}
+
+.uba-app-subtitle {
+    color: #FFFFFF;
+    font-size: 0.82rem;
+    font-weight: 400;
+    white-space: normal;
+}
+
+@media (max-width: 576px) {
+    .uba-app-name {
+        font-size: 1.1rem;
+    }
+
+    .uba-app-subtitle {
+        font-size: 0.7rem;
+        max-width: 230px;
+    }
+}

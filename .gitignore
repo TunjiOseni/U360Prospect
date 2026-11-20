@@ -1,9 +1,59 @@
+# Build outputs
 bin/
 obj/
 .vs/
+
+# IDE files
 *.user
 *.suo
 
-# Production / deployment artifacts
+# Deployment and publishing
 publish/
+publish-*/
+OfficeTest_Publish/
 *.zip
+*.rar
+
+# Temporary and backup files
+*.bak
+*.before-*
+.msbuild_probe/
+
+# Logs
+*.log
+
+# Environment-specific configuration
+# Review these files before committing if they contain secrets.
+
+# Accidental zero-byte files in project root
+/ClosedXML
+/Newtonsoft.Json
+/Oracle.ManagedDataAccess.Core
+/RBush.Signed
+/SixLabors.Fonts
+/Sustainsys.Saml2
+/System.Configuration.ConfigurationManager
+/System.Diagnostics.PerformanceCounter
+/System.IO.Packaging
+/System.Security.Cryptography.ProtectedData
+
+# Accidental zero-byte files in project root
+/ClosedXML
+/Newtonsoft.Json
+/Oracle.ManagedDataAccess.Core
+/RBush.Signed
+/SixLabors.Fonts
+/Sustainsys.Saml2
+/System.Configuration.ConfigurationManager
+/System.Diagnostics.PerformanceCounter
+/System.IO.Packaging
+/System.Security.Cryptography.ProtectedData
+
+# Environment-specific configuration containing credentials
+appsettings.Development.json
+appsettings.OfficeTest.json
+appsettings.POC.json
+
+# Local application configuration - never commit credentials
+/appsettings*.json
+!/appsettings.example.json

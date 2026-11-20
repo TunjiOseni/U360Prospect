@@ -1,20 +1,19 @@
 using Oracle.ManagedDataAccess.Client;
 using System.Data;
 using U360Prospect.Models;
+using U360Prospect.Data;
 
 namespace U360Prospect.Repositories;
 
 public class ProspectRepository
 {
-    private readonly string _connectionString;
+    private readonly OracleConnectionFactory _connectionFactory;
 
-    public ProspectRepository(IConfiguration configuration)
-    {
-        _connectionString =
-            configuration.GetConnectionString("OracleConnection")
-            ?? throw new InvalidOperationException(
-                "Oracle connection string is not configured.");
-    }
+public ProspectRepository(
+    OracleConnectionFactory connectionFactory)
+{
+    _connectionFactory = connectionFactory;
+}
 
 
     // =========================================================
@@ -26,6 +25,7 @@ public class ProspectRepository
         string? region = null,
         string? prospectType = null,
         string? ubaCustomer = null,
+	string? industry = null,
         int pageNumber = 1,
         int pageSize = 20,
         string sortColumn = "ProspectName",
@@ -83,6 +83,23 @@ public class ProspectRepository
                     Value = country.Trim()
                 });
         }
+
+	// =====================================================
+// INDUSTRY FILTER
+// =====================================================
+if (!string.IsNullOrWhiteSpace(industry))
+{
+    whereConditions.Add(
+        "LOWER(INDUSTRY) = LOWER(:Industry)");
+
+    parameters.Add(
+        new OracleParameter(
+            ":Industry",
+            OracleDbType.Varchar2)
+        {
+            Value = industry.Trim()
+        });
+}
 
 
         // =====================================================
@@ -182,13 +199,13 @@ public class ProspectRepository
         // =====================================================
         var countSql = $"""
             SELECT COUNT(*)
-            FROM BANKING.PROSPECT
+            FROM U360PROSPECT.PROSPECT
             {whereClause}
             """;
 
 
         await using (var connection =
-            new OracleConnection(_connectionString))
+            _connectionFactory.CreateConnection())
         {
             await connection.OpenAsync();
 
@@ -244,6 +261,7 @@ public class ProspectRepository
                 COMPANY_NAME,
                 PROSPECT_NAME,
                 PROSPECT_TYPE,
+                FUNDED,
                 ADDRESS,
                 STATE,
                 REGION,
@@ -258,7 +276,7 @@ public class ProspectRepository
                 UPLOADED_DATE,
                 CONVERTED_DATE,
                 REMARKS
-            FROM BANKING.PROSPECT
+            FROM U360PROSPECT.PROSPECT
             {whereClause}
             ORDER BY {orderColumn} {orderDirection}
             OFFSET :Offset ROWS
@@ -267,7 +285,7 @@ public class ProspectRepository
 
 
         await using (var connection =
-            new OracleConnection(_connectionString))
+            _connectionFactory.CreateConnection())
         {
             await connection.OpenAsync();
 
@@ -325,37 +343,16 @@ public class ProspectRepository
     // =========================================================
     // GET COUNTRIES
     // =========================================================
-    public async Task<List<string>> GetCountriesAsync()
-    {
-        const string sql = """
-            SELECT DISTINCT COUNTRY
-            FROM BANKING.PROSPECT
-            WHERE COUNTRY IS NOT NULL
-              AND TRIM(COUNTRY) IS NOT NULL
-            ORDER BY COUNTRY
-            """;
+public Task<List<string>> GetCountriesAsync()
+{
+    var countries = CountryCatalog.All
+        .Select(country => country.Code)
+        .Distinct(StringComparer.OrdinalIgnoreCase)
+        .OrderBy(code => code, StringComparer.OrdinalIgnoreCase)
+        .ToList();
 
-        var countries = new List<string>();
-
-        await using var connection =
-            new OracleConnection(_connectionString);
-
-        await connection.OpenAsync();
-
-        await using var command =
-            new OracleCommand(sql, connection);
-
-        await using var reader =
-            await command.ExecuteReaderAsync();
-
-        while (await reader.ReadAsync())
-        {
-            countries.Add(reader.GetString(0));
-        }
-
-        return countries;
-    }
-
+    return Task.FromResult(countries);
+}
 
     // =========================================================
     // GET REGIONS
@@ -374,7 +371,7 @@ public class ProspectRepository
         if (!string.IsNullOrWhiteSpace(country))
         {
             conditions.Add(
-                "LOWER(COUNTRY) = LOWER(:Country)");
+                "UPPER(TRIM(COUNTRY)) = UPPER(TRIM(:Country))");
 
             parameters.Add(
                 new OracleParameter(
@@ -387,7 +384,7 @@ public class ProspectRepository
 
         var sql = $"""
             SELECT DISTINCT REGION
-            FROM BANKING.PROSPECT
+            FROM U360PROSPECT.PROSPECT
             WHERE {string.Join(" AND ", conditions)}
             ORDER BY REGION
             """;
@@ -395,7 +392,7 @@ public class ProspectRepository
         var regions = new List<string>();
 
         await using var connection =
-            new OracleConnection(_connectionString);
+            _connectionFactory.CreateConnection();
 
         await connection.OpenAsync();
 
@@ -431,7 +428,7 @@ public async Task<List<string>> GetBranchesAsync(
     if (!string.IsNullOrWhiteSpace(country))
     {
         whereConditions.Add(
-            "LOWER(COUNTRY) = LOWER(:Country)");
+            "UPPER(TRIM(COUNTRY)) = UPPER(TRIM(:Country))");
 
         parameters.Add(
             new OracleParameter(
@@ -470,13 +467,13 @@ public async Task<List<string>> GetBranchesAsync(
 
     var sql = $"""
         SELECT DISTINCT TRIM(BRANCH_ID) AS BRANCH_ID
-        FROM BANKING.PROSPECT
+        FROM U360PROSPECT.PROSPECT
         {whereClause}
         ORDER BY TRIM(BRANCH_ID)
         """;
 
     await using var connection =
-        new OracleConnection(_connectionString);
+        _connectionFactory.CreateConnection();
 
     await connection.OpenAsync();
 
@@ -514,7 +511,7 @@ public async Task<List<string>> GetBranchesAsync(
     {
         const string sql = """
             SELECT DISTINCT PROSPECT_TYPE
-            FROM BANKING.PROSPECT
+            FROM U360PROSPECT.PROSPECT
             WHERE PROSPECT_TYPE IS NOT NULL
               AND TRIM(PROSPECT_TYPE) IS NOT NULL
             ORDER BY PROSPECT_TYPE
@@ -523,7 +520,7 @@ public async Task<List<string>> GetBranchesAsync(
         var prospectTypes = new List<string>();
 
         await using var connection =
-            new OracleConnection(_connectionString);
+            _connectionFactory.CreateConnection();
 
         await connection.OpenAsync();
 
@@ -541,6 +538,40 @@ public async Task<List<string>> GetBranchesAsync(
         return prospectTypes;
     }
 
+    // =========================================================
+// GET INDUSTRIES
+// =========================================================
+public async Task<List<string>> GetIndustriesAsync()
+{
+    const string sql = """
+        SELECT DISTINCT INDUSTRY
+        FROM U360PROSPECT.PROSPECT
+        WHERE INDUSTRY IS NOT NULL
+          AND TRIM(INDUSTRY) IS NOT NULL
+        ORDER BY INDUSTRY
+        """;
+
+    var industries = new List<string>();
+
+    await using var connection =
+        _connectionFactory.CreateConnection();
+
+    await connection.OpenAsync();
+
+    await using var command =
+        new OracleCommand(sql, connection);
+
+    await using var reader =
+        await command.ExecuteReaderAsync();
+
+    while (await reader.ReadAsync())
+    {
+        industries.Add(reader.GetString(0));
+    }
+
+    return industries;
+}
+
 
     // =========================================================
     // GET BY ROWID
@@ -554,6 +585,7 @@ public async Task<List<string>> GetBranchesAsync(
                 COMPANY_NAME,
                 PROSPECT_NAME,
                 PROSPECT_TYPE,
+                FUNDED,
                 ADDRESS,
                 STATE,
                 REGION,
@@ -568,12 +600,12 @@ public async Task<List<string>> GetBranchesAsync(
                 UPLOADED_DATE,
                 CONVERTED_DATE,
                 REMARKS
-            FROM BANKING.PROSPECT
+            FROM U360PROSPECT.PROSPECT
             WHERE ROWID = CHARTOROWID(:Id)
             """;
 
         await using var connection =
-            new OracleConnection(_connectionString);
+            _connectionFactory.CreateConnection();
 
         await connection.OpenAsync();
 
@@ -611,12 +643,13 @@ public async Task<List<string>> GetBranchesAsync(
 public async Task AddAsync(Prospect prospect)
 {
     const string sql = """
-        INSERT INTO BANKING.PROSPECT
+        INSERT INTO U360PROSPECT.PROSPECT
         (
             COUNTRY,
             COMPANY_NAME,
             PROSPECT_NAME,
             PROSPECT_TYPE,
+            FUNDED,
             ADDRESS,
             STATE,
             REGION,
@@ -638,6 +671,7 @@ public async Task AddAsync(Prospect prospect)
             :CompanyName,
             :ProspectName,
             :ProspectType,
+            :Funded,
             :Address,
             :State,
             :Region,
@@ -656,7 +690,7 @@ public async Task AddAsync(Prospect prospect)
         """;
 
     await using var connection =
-        new OracleConnection(_connectionString);
+        _connectionFactory.CreateConnection();
 
     await connection.OpenAsync();
 
@@ -684,6 +718,11 @@ public async Task AddAsync(Prospect prospect)
         command,
         ":ProspectType",
         prospect.ProspectType);
+
+    AddStringParameter(
+    command,
+    ":Funded",
+    prospect.Funded);
 
     AddStringParameter(
         command,
@@ -765,6 +804,212 @@ public async Task AddAsync(Prospect prospect)
 }
 
 
+
+public async Task<(int Inserted, int Skipped)> BulkAddAsync(
+    IReadOnlyCollection<Prospect> prospects)
+{
+    if (prospects.Count == 0)
+        return (0, 0);
+
+    await using var connection =
+        _connectionFactory.CreateConnection();
+
+    await connection.OpenAsync();
+
+    // Load existing duplicate keys once.
+    var existingKeys =
+        new HashSet<(string Country, string Company,
+                      string Prospect, string Branch)>();
+
+    const string existingSql = """
+        SELECT COUNTRY, COMPANY_NAME, PROSPECT_NAME, BRANCH_ID
+        FROM U360PROSPECT.PROSPECT
+        """;
+
+    await using (var existingCommand =
+        new OracleCommand(existingSql, connection))
+    await using (var reader =
+        await existingCommand.ExecuteReaderAsync())
+    {
+        while (await reader.ReadAsync())
+        {
+            existingKeys.Add((
+                NormalizeKeyPart(reader.GetValue(0)),
+                NormalizeKeyPart(reader.GetValue(1)),
+                NormalizeKeyPart(reader.GetValue(2)),
+                NormalizeKeyPart(reader.GetValue(3))
+            ));
+        }
+    }
+
+    var pending = new List<Prospect>();
+    int skipped = 0;
+
+    // Detect duplicates both in Oracle and within this workbook.
+    foreach (var prospect in prospects)
+    {
+        var key = (
+            NormalizeKeyPart(prospect.Country),
+            NormalizeKeyPart(prospect.CompanyName),
+            NormalizeKeyPart(prospect.ProspectName),
+            NormalizeKeyPart(prospect.BranchId)
+        );
+
+        if (!existingKeys.Add(key))
+        {
+            skipped++;
+            continue;
+        }
+
+        pending.Add(prospect);
+    }
+
+    if (pending.Count == 0)
+        return (0, skipped);
+
+    const string insertSql = """
+        INSERT INTO U360PROSPECT.PROSPECT
+        (
+            COUNTRY,
+            COMPANY_NAME,
+            PROSPECT_NAME,
+            PROSPECT_TYPE,
+            FUNDED,
+            ADDRESS,
+            STATE,
+            REGION,
+            PHONE,
+            EMAIL,
+            INDUSTRY,
+            UBA_CUSTOMER,
+            MARKETED_BY,
+            MARKETED_DATE,
+            BRANCH_ID,
+            ACQUISITION_STATUS,
+            UPLOADED_DATE,
+            CONVERTED_DATE,
+            REMARKS
+        )
+        VALUES
+        (
+            :Country,
+            :CompanyName,
+            :ProspectName,
+            :ProspectType,
+            :Funded,
+            :Address,
+            :State,
+            :Region,
+            :Phone,
+            :Email,
+            :Industry,
+            'No',
+            :MarketedBy,
+            :MarketedDate,
+            :BranchId,
+            :AcquisitionStatus,
+            SYSDATE,
+            NULL,
+            :Remarks
+        )
+        """;
+
+    using var transaction = connection.BeginTransaction();
+
+    try
+    {
+        const int batchSize = 500;
+
+        for (int start = 0; start < pending.Count; start += batchSize)
+        {
+            var batch = pending
+                .Skip(start)
+                .Take(batchSize)
+                .ToArray();
+
+            await using var command =
+                new OracleCommand(insertSql, connection)
+                {
+                    BindByName = true,
+                    ArrayBindCount = batch.Length,
+                    Transaction = transaction
+                };
+
+            void AddStringArray(
+                string name,
+                Func<Prospect, string?> selector)
+            {
+                var values = batch
+                    .Select(p => selector(p) ?? string.Empty)
+                    .ToArray();
+
+                var parameter = command.Parameters.Add(
+                    name, OracleDbType.Varchar2);
+
+                parameter.Value = values;
+
+                parameter.ArrayBindSize = values
+                    .Select(v => Math.Max(
+                        1,
+                        System.Text.Encoding.UTF8.GetByteCount(v)))
+                    .ToArray();
+            }
+
+            AddStringArray("Country", p => p.Country);
+            AddStringArray("CompanyName", p => p.CompanyName);
+            AddStringArray("ProspectName", p => p.ProspectName);
+            AddStringArray("ProspectType", p => p.ProspectType);
+            AddStringArray("Address", p => p.Address);
+            AddStringArray("State", p => p.State);
+            AddStringArray("Region", p => p.Region);
+            AddStringArray("Phone", p => p.Phone);
+            AddStringArray("Email", p => p.Email);
+            AddStringArray("Industry", p => p.Industry);
+	    AddStringArray("Funded", p => p.Funded);
+            AddStringArray("MarketedBy", p => p.MarketedBy);
+            AddStringArray("BranchId", p => p.BranchId);
+            AddStringArray(
+                "AcquisitionStatus",
+                p => p.AcquisitionStatus ?? "New");
+            AddStringArray("Remarks", p => p.Remarks);
+
+            var marketedDate = command.Parameters.Add(
+                "MarketedDate", OracleDbType.Date);
+
+            marketedDate.Value = batch
+                .Select(p => p.MarketedDate.HasValue
+                    ? (object)p.MarketedDate.Value
+                    : DBNull.Value)
+                .ToArray();
+
+            await command.ExecuteNonQueryAsync();
+        }
+
+        transaction.Commit();
+    }
+    catch
+    {
+        try
+        {
+            transaction.Rollback();
+        }
+        catch
+        {
+            // Preserve the original database error.
+        }
+
+        throw;
+    }
+
+    return (pending.Count, skipped);
+}
+
+private static string NormalizeKeyPart(object? value)
+{
+    return (Convert.ToString(value)?.Trim() ?? string.Empty)
+        .ToUpperInvariant();
+}
+
     // =========================================================
     // UPDATE
     // =========================================================
@@ -775,7 +1020,7 @@ public async Task AddAsync(Prospect prospect)
 public async Task UpdateAsync(Prospect prospect)
 {
     const string sql = """
-        UPDATE BANKING.PROSPECT
+        UPDATE U360PROSPECT.PROSPECT
         SET
             COUNTRY = :Country,
             COMPANY_NAME = :CompanyName,
@@ -796,7 +1041,7 @@ public async Task UpdateAsync(Prospect prospect)
         """;
 
     await using var connection =
-        new OracleConnection(_connectionString);
+        _connectionFactory.CreateConnection();
 
     await connection.OpenAsync();
 
@@ -908,9 +1153,9 @@ public async Task UpdateAsync(Prospect prospect)
     // CONVERT PROSPECT TO UBA CUSTOMER
     // =========================================================
     public async Task ConvertToCustomerAsync(string id)
-{
+    {
     const string sql = """
-        UPDATE BANKING.PROSPECT
+        UPDATE U360PROSPECT.PROSPECT
         SET
             UBA_CUSTOMER = 'Yes',
             ACQUISITION_STATUS = 'Converted',
@@ -919,7 +1164,7 @@ public async Task UpdateAsync(Prospect prospect)
         """;
 
     await using var connection =
-        new OracleConnection(_connectionString);
+        _connectionFactory.CreateConnection();
 
     await connection.OpenAsync();
 
@@ -932,7 +1177,360 @@ public async Task UpdateAsync(Prospect prospect)
         });
 
     await command.ExecuteNonQueryAsync();
+    }
+
+
+
+public async Task<string?> VerifyAndConvertToCustomerAsync(
+    string id,
+    string accountNumber,
+    string solId,
+    string country,
+    DateTime submittedOpenDate,
+    string convertedBy)
+{
+    await using var connection =
+        _connectionFactory.CreateConnection();
+
+    await connection.OpenAsync();
+
+    using var transaction =
+        connection.BeginTransaction(IsolationLevel.ReadCommitted);
+
+    try
+    {
+        // 1. Lock the application-owned prospect record.
+        const string prospectSql = """
+            SELECT
+                UPLOADED_DATE,
+                UBA_CUSTOMER,
+                ACQUISITION_STATUS
+            FROM U360PROSPECT.PROSPECT
+            WHERE ROWID = CHARTOROWID(:Id)
+            FOR UPDATE
+            """;
+
+        DateTime? uploadedDate;
+        string? ubaCustomer;
+        string? acquisitionStatus;
+
+        await using (var command =
+            new OracleCommand(prospectSql, connection))
+        {
+            command.Transaction = transaction;
+            command.BindByName = true;
+
+            command.Parameters.Add(
+                "Id", OracleDbType.Varchar2, 30).Value = id;
+
+            await using var reader =
+                await command.ExecuteReaderAsync();
+
+            if (!await reader.ReadAsync())
+                return "The selected prospect could not be found.";
+
+            uploadedDate = reader.IsDBNull(0)
+                ? null
+                : reader.GetDateTime(0);
+
+            ubaCustomer = reader.IsDBNull(1)
+                ? null
+                : reader.GetString(1);
+
+            acquisitionStatus = reader.IsDBNull(2)
+                ? null
+                : reader.GetString(2);
+        }
+
+        if (!uploadedDate.HasValue)
+            return "The prospect has no recorded upload date.";
+
+        if (string.Equals(
+                ubaCustomer, "Yes",
+                StringComparison.OrdinalIgnoreCase) ||
+            string.Equals(
+                acquisitionStatus, "Converted",
+                StringComparison.OrdinalIgnoreCase))
+        {
+            return "This prospect has already been converted.";
+        }
+
+        // 2. Verify the banking account through the read-only connection.
+        const string accountSql = """
+            SELECT
+                TRUNC(ACCOUNT_OPEN_DATE) AS OPEN_DATE,
+                CURRENCY,
+                ACCOUNT_TYPE,
+                CASE
+                    WHEN CLEARED_BALANCE >= 0 THEN 'Yes'
+                    ELSE 'No'
+                END AS FUNDED,
+                CUSTOMER_ID,
+                ACCOUNT_OFFICER,
+                DATE_LAST_MODIFIED,
+                ACCOUNT_ATTRIBUTE_2 AS SCHM_CODE,
+                COUNT(*) OVER() AS MATCH_COUNT
+            FROM BANKING.ACCOUNTS_DLY
+            WHERE LE_BOOK = '01'
+              AND TRIM(ACCOUNT_NO) = TRIM(:AccountNo)
+              AND SUBSTR(VISION_OUC, 7, 4) = :SolId
+              AND UPPER(TRIM(COUNTRY)) =
+                  CASE UPPER(TRIM(:Country))
+                      WHEN 'NIGERIA' THEN 'NG'
+                      ELSE UPPER(TRIM(:Country))
+                  END
+              AND ACCOUNT_OPEN_DATE IS NOT NULL
+            """;
+
+        DateTime? actualOpenDate;
+        string? currency;
+        string? accountType;
+        string? funded;
+        string? customerId;
+        string? accountOfficer;
+        DateTime? dateLastModified;
+        string? schmCode;
+        long matchCount;
+
+        await using (var bankingConnection =
+            _connectionFactory.CreateVisionReadOnlyConnection())
+        {
+            await bankingConnection.OpenAsync();
+
+            await using var command =
+                new OracleCommand(accountSql, bankingConnection);
+
+            command.BindByName = true;
+
+            command.Parameters.Add(
+                "AccountNo", OracleDbType.Varchar2, 50)
+                .Value = accountNumber.Trim();
+
+            command.Parameters.Add(
+                "SolId", OracleDbType.Varchar2, 4)
+                .Value = solId.Trim();
+
+            command.Parameters.Add(
+                "Country", OracleDbType.Varchar2, 100)
+                .Value = country.Trim();
+
+            await using var reader =
+                await command.ExecuteReaderAsync();
+
+            if (!await reader.ReadAsync())
+            {
+                matchCount = 0;
+                actualOpenDate = null;
+                currency = null;
+                accountType = null;
+                funded = null;
+                customerId = null;
+                accountOfficer = null;
+                dateLastModified = null;
+                schmCode = null;
+            }
+            else
+            {
+                actualOpenDate = reader.IsDBNull(
+                    reader.GetOrdinal("OPEN_DATE"))
+                    ? null
+                    : reader.GetDateTime(
+                        reader.GetOrdinal("OPEN_DATE"));
+
+                currency = reader.IsDBNull(
+                    reader.GetOrdinal("CURRENCY"))
+                    ? null
+                    : reader.GetString(
+                        reader.GetOrdinal("CURRENCY"));
+
+                accountType = reader.IsDBNull(
+                    reader.GetOrdinal("ACCOUNT_TYPE"))
+                    ? null
+                    : reader.GetString(
+                        reader.GetOrdinal("ACCOUNT_TYPE"));
+
+                funded = reader.IsDBNull(
+                    reader.GetOrdinal("FUNDED"))
+                    ? null
+                    : reader.GetString(
+                        reader.GetOrdinal("FUNDED"));
+
+                customerId = reader.IsDBNull(
+                    reader.GetOrdinal("CUSTOMER_ID"))
+                    ? null
+                    : reader.GetString(
+                        reader.GetOrdinal("CUSTOMER_ID"));
+
+                accountOfficer = reader.IsDBNull(
+                    reader.GetOrdinal("ACCOUNT_OFFICER"))
+                    ? null
+                    : reader.GetString(
+                        reader.GetOrdinal("ACCOUNT_OFFICER"));
+
+                dateLastModified = reader.IsDBNull(
+                    reader.GetOrdinal("DATE_LAST_MODIFIED"))
+                    ? null
+                    : reader.GetDateTime(
+                        reader.GetOrdinal("DATE_LAST_MODIFIED"));
+
+                schmCode = reader.IsDBNull(
+                    reader.GetOrdinal("SCHM_CODE"))
+                    ? null
+                    : reader.GetString(
+                        reader.GetOrdinal("SCHM_CODE"));
+
+                matchCount = Convert.ToInt64(
+                    reader["MATCH_COUNT"]);
+            }
+        }
+
+        // 3. Validate the banking account.
+        if (matchCount == 0 || !actualOpenDate.HasValue)
+        {
+            return "No matching account was found. Check the account " +
+                   "number, SOL ID and country.";
+        }
+
+        if (actualOpenDate.Value.Date != submittedOpenDate.Date)
+        {
+            return "The account opening date entered does not match " +
+                   "the date held in the banking database.";
+        }
+
+        if (actualOpenDate.Value.Date <= uploadedDate.Value.Date)
+        {
+            return "The account opening date must be later than the " +
+                   "prospect upload date (" +
+                   uploadedDate.Value.ToString("dd-MMM-yyyy") + ").";
+        }
+
+        // 4. Update the application-owned prospect record.
+        const string updateSql = """
+            UPDATE U360PROSPECT.PROSPECT
+            SET
+                UBA_CUSTOMER = 'Yes',
+                ACQUISITION_STATUS = 'Converted',
+                CONVERTED_DATE = SYSDATE,
+                CONVERTED_ACCOUNT_NO = :AccountNo,
+                CONVERTED_SOL_ID = :SolId,
+                CONVERTED_COUNTRY = :Country,
+                ACCOUNT_OPEN_DATE = :OpenDate,
+                CURRENCY = :Currency,
+                ACCOUNT_TYPE = :AccountType,
+                FUNDED = :Funded,
+                CUSTOMER_ID = :CustomerId,
+                ACCOUNT_OFFICER = :AccountOfficer,
+                DATE_LAST_MODIFIED = :DateLastModified,
+                SCHM_CODE = :SchmCode,
+                CONVERTED_BY = :ConvertedBy
+            WHERE ROWID = CHARTOROWID(:Id)
+              AND NVL(UBA_CUSTOMER, 'No') <> 'Yes'
+              AND NVL(ACQUISITION_STATUS, 'New') <> 'Converted'
+            """;
+
+        await using (var command =
+            new OracleCommand(updateSql, connection))
+        {
+            command.Transaction = transaction;
+            command.BindByName = true;
+
+            command.Parameters.Add(
+                "AccountNo", OracleDbType.Varchar2, 50)
+                .Value = accountNumber.Trim();
+
+            command.Parameters.Add(
+                "SolId", OracleDbType.Varchar2, 4)
+                .Value = solId.Trim();
+
+            command.Parameters.Add(
+                "Country", OracleDbType.Varchar2, 100)
+                .Value = country.Trim();
+
+            command.Parameters.Add(
+                "OpenDate", OracleDbType.Date)
+                .Value = actualOpenDate.Value.Date;
+
+            command.Parameters.Add(
+                "Currency", OracleDbType.Varchar2, 3)
+                .Value = string.IsNullOrWhiteSpace(currency)
+                    ? DBNull.Value
+                    : currency.Trim();
+
+            command.Parameters.Add(
+                "AccountType", OracleDbType.Varchar2, 10)
+                .Value = string.IsNullOrWhiteSpace(accountType)
+                    ? DBNull.Value
+                    : accountType.Trim();
+
+            command.Parameters.Add(
+                "Funded", OracleDbType.Varchar2, 15)
+                .Value = string.IsNullOrWhiteSpace(funded)
+                    ? DBNull.Value
+                    : funded.Trim();
+
+            command.Parameters.Add(
+                "CustomerId", OracleDbType.Varchar2, 15)
+                .Value = string.IsNullOrWhiteSpace(customerId)
+                    ? DBNull.Value
+                    : customerId.Trim();
+
+            command.Parameters.Add(
+                "AccountOfficer", OracleDbType.Varchar2, 10)
+                .Value = string.IsNullOrWhiteSpace(accountOfficer)
+                    ? DBNull.Value
+                    : accountOfficer.Trim();
+
+            command.Parameters.Add(
+                "DateLastModified", OracleDbType.TimeStamp)
+                .Value = dateLastModified.HasValue
+                    ? dateLastModified.Value
+                    : DBNull.Value;
+
+            command.Parameters.Add(
+                "SchmCode", OracleDbType.Varchar2, 10)
+                .Value = string.IsNullOrWhiteSpace(schmCode)
+                    ? DBNull.Value
+                    : schmCode.Trim();
+
+            command.Parameters.Add(
+                "ConvertedBy", OracleDbType.Varchar2, 256)
+                .Value = string.IsNullOrWhiteSpace(convertedBy)
+                    ? "Unknown"
+                    : convertedBy.Trim();
+
+            command.Parameters.Add(
+                "Id", OracleDbType.Varchar2, 30)
+                .Value = id;
+
+            int rowsUpdated =
+                await command.ExecuteNonQueryAsync();
+
+            if (rowsUpdated != 1)
+                return "The prospect was not converted. Refresh and retry.";
+        }
+
+        // 5. Commit the prospect update.
+        transaction.Commit();
+
+        return null;
+    }
+    catch
+    {
+        try
+        {
+            transaction.Rollback();
+        }
+        catch
+        {
+            // Preserve the original exception.
+        }
+
+        throw;
+    }
 }
+
+
+
 
     // =========================================================
     // DELETE
@@ -940,12 +1538,12 @@ public async Task UpdateAsync(Prospect prospect)
     public async Task DeleteAsync(string id)
     {
         const string sql = """
-            DELETE FROM BANKING.PROSPECT
+            DELETE FROM U360PROSPECT.PROSPECT
             WHERE ROWID = CHARTOROWID(:Id)
             """;
 
         await using var connection =
-            new OracleConnection(_connectionString);
+            _connectionFactory.CreateConnection();
 
         await connection.OpenAsync();
 
@@ -1087,6 +1685,7 @@ public async Task<List<Prospect>> GetAllForDownloadAsync(
             COMPANY_NAME,
             PROSPECT_NAME,
             PROSPECT_TYPE,
+            FUNDED,
             ADDRESS,
             STATE,
             REGION,
@@ -1101,7 +1700,7 @@ public async Task<List<Prospect>> GetAllForDownloadAsync(
             UPLOADED_DATE,
             CONVERTED_DATE,
             REMARKS
-        FROM BANKING.PROSPECT
+        FROM U360PROSPECT.PROSPECT
         {whereClause}
         ORDER BY COUNTRY, REGION, PROSPECT_NAME
         """;
@@ -1109,7 +1708,7 @@ public async Task<List<Prospect>> GetAllForDownloadAsync(
     var prospects = new List<Prospect>();
 
     await using var connection =
-        new OracleConnection(_connectionString);
+        _connectionFactory.CreateConnection();
 
     await connection.OpenAsync();
 
@@ -1146,7 +1745,7 @@ public async Task<bool> ExistsAsync(
 {
     var sql = """
         SELECT COUNT(*)
-        FROM BANKING.PROSPECT
+        FROM U360PROSPECT.PROSPECT
         WHERE LOWER(COUNTRY) = LOWER(:Country)
           AND LOWER(COMPANY_NAME) = LOWER(:CompanyName)
           AND LOWER(PROSPECT_NAME) = LOWER(:ProspectName)
@@ -1167,7 +1766,7 @@ public async Task<bool> ExistsAsync(
     }
 
     await using var connection =
-        new OracleConnection(_connectionString);
+        _connectionFactory.CreateConnection();
 
     await connection.OpenAsync();
 
@@ -1390,12 +1989,12 @@ if (endDate.HasValue)
                 ) AS BINARY_DOUBLE
             ) AS AVG_CONVERSION_DAYS
 
-        FROM BANKING.PROSPECT
+        FROM U360PROSPECT.PROSPECT
         {whereClause}
         """;
 
     await using var connection =
-        new OracleConnection(_connectionString);
+        _connectionFactory.CreateConnection();
 
     await connection.OpenAsync();
 
@@ -1615,7 +2214,7 @@ public async Task<List<BranchPerformance>>
                 END
             ) AS CONVERTED_CUSTOMERS
 
-        FROM BANKING.PROSPECT
+        FROM U360PROSPECT.PROSPECT
 
         {whereClause}
 
@@ -1625,7 +2224,7 @@ public async Task<List<BranchPerformance>>
         """;
 
     await using var connection =
-        new OracleConnection(_connectionString);
+        _connectionFactory.CreateConnection();
 
     await connection.OpenAsync();
 
@@ -1780,7 +2379,7 @@ public async Task<List<BranchPerformance>>
                 END
             ) AS CONVERTED_CUSTOMERS
 
-        FROM BANKING.PROSPECT
+        FROM U360PROSPECT.PROSPECT
 
         {whereClause}
 
@@ -1790,7 +2389,7 @@ public async Task<List<BranchPerformance>>
         """;
 
     await using var connection =
-        new OracleConnection(_connectionString);
+        _connectionFactory.CreateConnection();
 
     await connection.OpenAsync();
 
@@ -1865,6 +2464,7 @@ public async Task<List<BranchPerformance>>
         CompanyName = GetString(reader, "COMPANY_NAME") ?? string.Empty,
         ProspectName = GetString(reader, "PROSPECT_NAME") ?? string.Empty,
         ProspectType = GetString(reader, "PROSPECT_TYPE") ?? string.Empty,
+	Funded = GetString(reader, "FUNDED"),
         Address = GetString(reader, "ADDRESS"),
         State = GetString(reader, "STATE"),
         Region = GetString(reader, "REGION"),

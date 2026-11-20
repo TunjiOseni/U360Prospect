@@ -18,6 +18,15 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
-    }
+    },
+    "OfficeTest": {
+  "commandName": "Project",
+  "dotnetRunMessages": true,
+  "launchBrowser": false,
+  "applicationUrl": "https://10.101.211.89:5000",
+  "environmentVariables": {
+    "ASPNETCORE_ENVIRONMENT": "OfficeTest"
+  }
+}
   }
 }

@@ -1,0 +1,65 @@
+
+@model U360Prospect.Models.Api.ReactivateUserRequest
+
+@{
+    ViewData["Title"] = "Reactivate User";
+}
+
+<div class="container mt-4">
+
+    <h3>Reactivate User Account</h3>
+    <p class="text-muted">Restore access to this application.</p>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+
+            <div class="alert alert-info">
+                You are about to restore this user's access to U360Prospect.
+            </div>
+
+            <p><strong>Username:</strong> @ViewBag.Username</p>
+            <p><strong>Display Name:</strong> @ViewBag.DisplayName</p>
+
+            <form asp-action="Reactivate"
+                  asp-route-id="@ViewBag.UserId"
+                  method="post">
+
+                @Html.AntiForgeryToken()
+
+                <div asp-validation-summary="ModelOnly"
+                     class="text-danger mb-3"></div>
+
+                <div class="mb-3">
+                    <label asp-for="Reason" class="form-label">
+                        Reason for Reactivation (Optional)
+                    </label>
+
+                    <textarea asp-for="Reason"
+                              class="form-control"
+                              rows="4"
+                              placeholder="Enter the reason for reactivating this account"></textarea>
+
+                    <span asp-validation-for="Reason"
+                          class="text-danger"></span>
+                </div>
+
+                <button type="submit" class="btn btn-success">
+                    Confirm Reactivation
+                </button>
+
+                <a asp-controller="UserManagement"
+                   asp-action="Details"
+                   asp-route-id="@ViewBag.UserId"
+                   class="btn btn-light">
+                    Cancel
+                </a>
+
+            </form>
+
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
